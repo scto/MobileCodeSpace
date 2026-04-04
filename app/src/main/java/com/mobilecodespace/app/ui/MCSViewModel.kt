@@ -26,6 +26,8 @@ class MCSViewModel @Inject constructor() : ViewModel() {
             // 3. Prüfe ob Rootfs existiert
             
             // Vorläufige Logik:
+            // Wir setzen es auf false, um das Onboarding zu erzwingen, 
+            // bis die Setup-Logik implementiert ist.
             _isSetupComplete.value = false
         }
     }

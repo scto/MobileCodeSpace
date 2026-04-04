@@ -9,7 +9,7 @@ class MCSApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         
-        // Globaler Error-Handler
+        // Globaler Error-Handler für unvorhergesehene Abstürze
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             Log.e("MCSApplication", "Uncaught exception in thread ${thread.name}", throwable)
         }
