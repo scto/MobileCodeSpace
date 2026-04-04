@@ -1,7 +1,11 @@
 package com.mobilecodespace.feature.onboarding
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -11,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.mobilecodespace.core.ui.components.MCSButton
 import com.mobilecodespace.core.ui.components.MCSProgressBar
@@ -18,6 +23,7 @@ import com.mobilecodespace.core.ui.components.MCSProgressBar
 @Composable
 fun OnboardingScreen(viewModel: OnboardingViewModel) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     // Permission launcher für Standard-Berechtigungen
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -25,6 +31,18 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
         onResult = { isGranted ->
             if (isGranted) {
                 viewModel.requestPermissions()
+            }
+        }
+    )
+
+    // Launcher für MANAGE_EXTERNAL_STORAGE
+    val storagePermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { _ ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    viewModel.requestPermissions()
+                }
             }
         }
     )
@@ -40,9 +58,9 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
                 Spacer(modifier = Modifier.height(16.dp))
                 MCSButton(text = "Berechtigungen erteilen", onClick = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        // Hinweis: MANAGE_EXTERNAL_STORAGE erfordert einen Intent zu den Systemeinstellungen
-                        // Für diese Implementierung simulieren wir den Erfolg
-                        viewModel.requestPermissions()
+                        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                        intent.data = Uri.parse("package:${context.packageName}")
+                        storagePermissionLauncher.launch(intent)
                     } else {
                         permissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     }
