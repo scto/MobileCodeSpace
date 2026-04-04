@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
@@ -23,12 +24,22 @@ fun EditorScreen(viewModel: EditorViewModel) {
             
             isLineNumberEnabled = true
             isWordwrapEnabled = true
+            
+            // 1. Theme Integration via AssetManager
+            // Hier würde man das Theme aus den Assets laden:
+            // val themeRegistry = ThemeRegistry.getInstance()
+            // themeRegistry.loadTheme(context.assets.open("themes/dark_purple.json"))
             colorScheme = EditorColorScheme() 
             
-            // Beispiel für TextMate Integration (Sprach-Provider)
-            // In einer echten App würden hier die Grammatiken aus den Assets geladen
+            // 2. TextMate & GrammarProvider Integration
+            // Beispiel für Java-Grammatik
             val language = TextMateLanguage.create("source.java", true)
             setEditorLanguage(language)
+            
+            // 3. LSP Integration (Vorbereitung)
+            // Hier würde der LSP-Provider initialisiert werden:
+            // val lspProvider = LspLanguageProvider(...)
+            // setEditorLanguage(lspProvider)
         }
     }
 
