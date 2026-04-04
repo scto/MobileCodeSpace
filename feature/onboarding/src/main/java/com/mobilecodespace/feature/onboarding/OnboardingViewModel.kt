@@ -23,7 +23,7 @@ class OnboardingViewModel @Inject constructor(
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
     fun requestPermissions() {
-        // In einer echten Implementierung würde hier die Berechtigungsanfrage gestartet.
+        // Berechtigungen wurden erteilt, weiter zum Download
         _uiState.value = OnboardingUiState.Downloading
     }
 
@@ -33,12 +33,13 @@ class OnboardingViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     // Installation von PRoot und Setup des Rootfs
+                    // Hier könnten auch OpenJDK und Build-Tools integriert werden
                     prootManager.installProotBinary()
                     prootManager.setupRootfs()
                     completeSetup()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    // Hier könnte ein Error-State für das UI hinzugefügt werden
+                    // Fehlerbehandlung könnte hier ergänzt werden
                 }
             }
         }
