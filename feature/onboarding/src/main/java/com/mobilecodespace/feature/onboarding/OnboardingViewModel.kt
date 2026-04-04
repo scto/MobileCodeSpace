@@ -1,33 +1,46 @@
 package com.mobilecodespace.feature.onboarding
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.core.data.proot.PRootManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val application: Application
 ) : ViewModel() {
 
+    private val prootManager = PRootManager(application)
     private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.Permissions)
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
     fun requestPermissions() {
         // In einer echten Implementierung würde hier die Berechtigungsanfrage gestartet.
-        // Wir simulieren den Erfolg und gehen zum Download über.
         _uiState.value = OnboardingUiState.Downloading
     }
 
     fun startDownload() {
         viewModelScope.launch {
             _uiState.value = OnboardingUiState.Installing
-            // Simulation des Downloads und der Installation
-            kotlinx.coroutines.delay(2000)
-            completeSetup()
+            withContext(Dispatchers.IO) {
+                try {
+                    // Installation von PRoot und Setup des Rootfs
+                    prootManager.installProotBinary()
+                    prootManager.setupRootfs()
+                    completeSetup()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // Hier könnte ein Error-State für das UI hinzugefügt werden
+                }
+            }
         }
     }
 
