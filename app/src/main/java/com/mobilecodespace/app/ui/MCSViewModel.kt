@@ -2,14 +2,18 @@ package com.mobilecodespace.app.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.feature.onboarding.DataStoreManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MCSViewModel @Inject constructor() : ViewModel() {
+class MCSViewModel @Inject constructor(
+    private val dataStoreManager: DataStoreManager
+) : ViewModel() {
     
     private val _isSetupComplete = MutableStateFlow(false)
     val isSetupComplete: StateFlow<Boolean> = _isSetupComplete
@@ -20,15 +24,9 @@ class MCSViewModel @Inject constructor() : ViewModel() {
 
     private fun checkSetupStatus() {
         viewModelScope.launch {
-            // TODO: Implementiere echte Prüfung:
-            // 1. Prüfe MANAGE_EXTERNAL_STORAGE Permission
-            // 2. Prüfe ob PRoot Binary existiert
-            // 3. Prüfe ob Rootfs existiert
-            
-            // Vorläufige Logik:
-            // Wir setzen es auf false, um das Onboarding zu erzwingen, 
-            // bis die Setup-Logik implementiert ist.
-            _isSetupComplete.value = false
+            dataStoreManager.isSetupComplete.collectLatest { complete ->
+                _isSetupComplete.value = complete
+            }
         }
     }
 }
