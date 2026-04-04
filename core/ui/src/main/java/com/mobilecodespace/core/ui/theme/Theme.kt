@@ -19,6 +19,7 @@ fun MCSTheme(
 ) {
     MaterialTheme(
         colorScheme = DarkColors,
+        typography = Typography,
         content = content
     )
 }
