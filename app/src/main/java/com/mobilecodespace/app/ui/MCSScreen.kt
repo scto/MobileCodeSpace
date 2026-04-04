@@ -8,7 +8,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobilecodespace.feature.onboarding.OnboardingScreen
+import com.mobilecodespace.feature.onboarding.OnboardingViewModel
 
 @Composable
 fun MCSScreen(
@@ -16,13 +19,16 @@ fun MCSScreen(
 ) {
     val isSetupComplete by viewModel.isSetupComplete.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxSize()) {
         if (isSetupComplete) {
             // Hier wird später die Navigation zum Home-Feature eingebunden
-            Text(text = "Home Screen (Feature:Home)")
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Home Screen (Feature:Home)")
+            }
         } else {
-            // Hier wird später die Navigation zum Onboarding-Feature eingebunden
-            Text(text = "Onboarding Screen (Feature:Onboarding)")
+            // Integration des Onboarding-Screens
+            val onboardingViewModel: OnboardingViewModel = hiltViewModel()
+            OnboardingScreen(viewModel = onboardingViewModel)
         }
     }
 }
