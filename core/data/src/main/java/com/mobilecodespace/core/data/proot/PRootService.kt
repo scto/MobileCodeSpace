@@ -1,6 +1,5 @@
 package com.mobilecodespace.core.data.proot
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -9,7 +8,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 
 /**
- * Service, um die Ubuntu-Instanz im Hintergrund stabil zu halten.
+ * Android Service, um die Ubuntu-Instanz im Hintergrund stabil zu halten.
  */
 class PRootService : Service() {
 
@@ -44,7 +43,7 @@ class PRootService : Service() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("MobileCodeSpace")
             .setContentText("Ubuntu Umgebung läuft im Hintergrund")
-            .setSmallIcon(android.R.drawable.ic_menu_info_details)
+            .setSmallIcon(android.R.drawable.ic_menu_save) // Platzhalter Icon
             .build()
 
         startForeground(1, notification)

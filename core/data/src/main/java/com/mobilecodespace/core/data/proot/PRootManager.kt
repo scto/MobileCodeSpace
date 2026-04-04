@@ -3,10 +3,10 @@ package com.mobilecodespace.core.data.proot
 import android.content.Context
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
 /**
- * Verwaltet die PRoot-Umgebung, inklusive Binary-Bereitstellung und Ausführung.
+ * Verwaltet den PRoot-Prozess und das Ubuntu-Rootfs.
+ * Verantwortlich für das Entpacken der Binary und das Starten der Shell.
  */
 class PRootManager(private val context: Context) {
 
@@ -19,7 +19,8 @@ class PRootManager(private val context: Context) {
     }
 
     /**
-     * Kopiert die PRoot-Binary aus den Assets in das App-Verzeichnis.
+     * Kopiert die proot-Binary aus den Assets in das interne Verzeichnis,
+     * falls sie noch nicht existiert, und setzt die Ausführungsrechte.
      */
     fun installProotBinary() {
         if (!prootBinary.exists()) {
@@ -33,7 +34,8 @@ class PRootManager(private val context: Context) {
     }
 
     /**
-     * Platzhalter für den Download und die Extraktion des Ubuntu Rootfs.
+     * Bereitet das Rootfs vor.
+     * TODO: Implementierung für Download und Extraktion (z.B. via Tar) hinzufügen.
      */
     fun setupRootfs() {
         if (!rootfsDir.exists()) {
@@ -43,7 +45,7 @@ class PRootManager(private val context: Context) {
     }
 
     /**
-     * Startet den PRoot-Prozess.
+     * Startet den PRoot-Prozess mit den notwendigen Parametern.
      */
     fun startProot(): Process {
         val command = listOf(
@@ -55,7 +57,6 @@ class PRootManager(private val context: Context) {
         )
         
         return ProcessBuilder(command)
-            .directory(rootfsDir)
             .redirectErrorStream(true)
             .start()
     }
