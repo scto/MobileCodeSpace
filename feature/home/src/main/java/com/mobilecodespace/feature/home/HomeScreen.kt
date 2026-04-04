@@ -42,6 +42,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(text = project.name, style = MaterialTheme.typography.titleMedium)
                         Text(text = project.path, style = MaterialTheme.typography.bodySmall)
+                        Text(text = "Updated: ${project.lastUpdated}", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }

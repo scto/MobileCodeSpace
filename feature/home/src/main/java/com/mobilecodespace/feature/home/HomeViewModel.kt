@@ -14,6 +14,11 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     init {
         // Hier würde die Logik zum Laden der Projekte aus dem Dateisystem folgen
+        // Beispiel-Daten für die UI-Entwicklung
+        _recentProjects.value = listOf(
+            Project("MyAndroidApp", "/storage/emulated/0/Projects/MyAndroidApp", "2024-05-20 10:00"),
+            Project("ComposeLibrary", "/storage/emulated/0/Projects/ComposeLibrary", "2024-05-19 15:30")
+        )
     }
 }
 
