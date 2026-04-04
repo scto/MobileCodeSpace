@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
@@ -25,21 +26,29 @@ fun EditorScreen(viewModel: EditorViewModel) {
             isLineNumberEnabled = true
             isWordwrapEnabled = true
             
-            // 1. Theme Integration via AssetManager
-            // Hier würde man das Theme aus den Assets laden:
-            // val themeRegistry = ThemeRegistry.getInstance()
-            // themeRegistry.loadTheme(context.assets.open("themes/dark_purple.json"))
-            colorScheme = EditorColorScheme() 
+            // 1. Theme Integration
+            // Wir nutzen das ThemeRegistry, um das Dark Purple Theme zu laden
+            val themeRegistry = ThemeRegistry.getInstance()
+            // Annahme: Die Datei liegt in assets/themes/dark_purple.json
+            try {
+                context.assets.open("themes/dark_purple.json").use {
+                    themeRegistry.loadTheme(it)
+                }
+                colorScheme = themeRegistry.getColorScheme("dark_purple")
+            } catch (e: Exception) {
+                colorScheme = EditorColorScheme() // Fallback
+            }
             
             // 2. TextMate & GrammarProvider Integration
-            // Beispiel für Java-Grammatik
+            // Wir registrieren einen FileProvider, damit TextMate Grammatiken laden kann
+            FileProviderRegistry.getInstance().setContext(context)
+            
+            // Beispiel für Java-Grammatik (wird durch TextMateLanguage geladen)
             val language = TextMateLanguage.create("source.java", true)
             setEditorLanguage(language)
             
             // 3. LSP Integration (Vorbereitung)
-            // Hier würde der LSP-Provider initialisiert werden:
-            // val lspProvider = LspLanguageProvider(...)
-            // setEditorLanguage(lspProvider)
+            // Hier würde der LSP-Provider initialisiert werden, sobald die LSP-Bibliothek eingebunden ist
         }
     }
 

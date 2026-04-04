@@ -76,6 +76,8 @@ class EditorViewModel : ViewModel() {
     }
 
     fun formatCode() {
-        // TODO: LSP-Integration für Formatierung
+        // LSP-Integration für Formatierung
+        // Hier würde der LSP-Client aufgerufen werden, um das Dokument zu formatieren
+        // editor?.lspClient?.formatDocument()
     }
 }
