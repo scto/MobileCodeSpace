@@ -18,8 +18,10 @@ fun MCSScreen(
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         if (isSetupComplete) {
+            // Hier wird später die Navigation zum Home-Feature eingebunden
             Text(text = "Home Screen (Feature:Home)")
         } else {
+            // Hier wird später die Navigation zum Onboarding-Feature eingebunden
             Text(text = "Onboarding Screen (Feature:Onboarding)")
         }
     }

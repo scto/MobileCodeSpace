@@ -12,7 +12,6 @@ class MCSApplication : Application() {
         // Globaler Error-Handler
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             Log.e("MCSApplication", "Uncaught exception in thread ${thread.name}", throwable)
-            // Hier könnte man später eine Crash-Reporting-Library einbinden
         }
     }
 }
