@@ -27,7 +27,7 @@ fun TerminalScreen(viewModel: TerminalViewModel) {
         }
     }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(viewModel) {
         // In einer echten Implementierung würde hier eine TerminalSession erstellt
         // und mit viewModel.inputStream und viewModel.outputStream verbunden werden.
         // Da TerminalSession eine komplexe Klasse aus der Termux-Library ist,
