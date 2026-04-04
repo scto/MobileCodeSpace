@@ -24,7 +24,8 @@ fun TerminalScreen(viewModel: TerminalViewModel) {
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    // Terminal-Session hier verbinden
+                    // In a real implementation, you would attach a TerminalSession here
+                    // that reads from viewModel.inputStream and writes to viewModel.outputStream
                 }
             }
         )

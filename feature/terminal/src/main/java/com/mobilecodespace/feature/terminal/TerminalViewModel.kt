@@ -43,7 +43,15 @@ class TerminalViewModel @Inject constructor(
     fun sendKey(key: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                outputStream?.write(key.toByteArray())
+                // Map special keys to escape sequences if needed
+                val bytes = when (key) {
+                    "ESC" -> byteArrayOf(0x1B.toByte())
+                    "CTRL" -> byteArrayOf(0x03.toByte()) // Example
+                    "ALT" -> byteArrayOf(0x1B.toByte()) // Example
+                    "TAB" -> byteArrayOf(0x09.toByte())
+                    else -> key.toByteArray()
+                }
+                outputStream?.write(bytes)
                 outputStream?.flush()
             } catch (e: Exception) {
                 e.printStackTrace()
