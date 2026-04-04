@@ -50,13 +50,12 @@ fun EditorScreen(viewModel: EditorViewModel) {
             FileProviderRegistry.getInstance().setContext(context)
             
             // Beispiel für Tree-sitter Integration (Java)
-            // In einer echten App würden hier die Tree-sitter Grammatiken geladen
             val language = TreeSitterLanguage.create("java")
             setEditorLanguage(language)
             
             // 3. LSP Integration (Vorbereitung)
-            // Hier würde der LspLanguageProvider initialisiert werden
-            // val lspProvider = LspLanguageProvider(...)
+            // Hier würde der LspLanguageProvider initialisiert werden, sobald die LSP-Bibliothek eingebunden ist
+            // val lspProvider = LspLanguageProvider(this)
             // setEditorLanguage(lspProvider)
         }
     }
