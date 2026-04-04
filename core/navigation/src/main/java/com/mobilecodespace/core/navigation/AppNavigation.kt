@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mobilecodespace.feature.editor.EditorScreen
+import com.mobilecodespace.feature.fileexplorer.FileExplorerScreen
+import com.mobilecodespace.feature.git.GitScreen
 import com.mobilecodespace.feature.home.HomeScreen
 import com.mobilecodespace.feature.onboarding.OnboardingScreen
 
@@ -21,6 +23,12 @@ fun AppNavigation(startDestination: String) {
         }
         composable("editor") { 
             EditorScreen(viewModel = hiltViewModel()) 
+        }
+        composable("fileexplorer") {
+            FileExplorerScreen()
+        }
+        composable("git") {
+            GitScreen()
         }
     }
 }
