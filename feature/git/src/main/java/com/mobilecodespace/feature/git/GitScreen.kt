@@ -17,5 +17,6 @@ fun GitScreen() {
         Text("Changes not staged for commit:")
         Text("  modified: src/main/java/MainActivity.kt")
         Text("  modified: build.gradle.kts")
+        Text("  modified: feature/git/GitScreen.kt")
     }
 }
