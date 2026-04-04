@@ -1,9 +1,13 @@
 package com.mobilecodespace.feature.editor
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import io.github.rosemoe.sora.widget.CodeEditor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class EditorViewModel : ViewModel() {
@@ -14,28 +18,41 @@ class EditorViewModel : ViewModel() {
     private val _isSaved = MutableStateFlow(true)
     val isSaved: StateFlow<Boolean> = _isSaved
 
-    // Referenz auf den Editor, um Aktionen auszuführen
     private var editor: CodeEditor? = null
+    private var currentFile: File? = null
 
     fun setEditor(editor: CodeEditor) {
         this.editor = editor
     }
 
     fun openFile(file: File) {
-        if (!_openFiles.value.contains(file)) {
-            _openFiles.value = _openFiles.value + file
+        viewModelScope.launch {
+            val content = withContext(Dispatchers.IO) {
+                file.readText()
+            }
+            editor?.setText(content)
+            currentFile = file
+            if (!_openFiles.value.contains(file)) {
+                _openFiles.value = _openFiles.value + file
+            }
+            _isSaved.value = true
         }
-        // TODO: Inhalt der Datei in den Editor laden
     }
 
-    fun saveFile(content: String) {
-        // Logik zum Speichern der Datei
-        _isSaved.value = true
+    fun saveFile() {
+        val file = currentFile ?: return
+        val content = editor?.text.toString()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                file.writeText(content)
+            }
+            _isSaved.value = true
+        }
     }
 
     fun saveAll() {
-        // Logik zum Speichern aller offenen Dateien
-        _isSaved.value = true
+        // In einer echten Implementierung würden hier alle offenen Dateien gespeichert
+        saveFile()
     }
 
     fun undo() {
@@ -59,6 +76,6 @@ class EditorViewModel : ViewModel() {
     }
 
     fun formatCode() {
-        // Logik für Code-Formatierung (z.B. via LSP)
+        // TODO: LSP-Integration für Formatierung
     }
 }
