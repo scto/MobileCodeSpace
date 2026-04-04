@@ -15,11 +15,12 @@ fun FileExplorerScreen() {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("File Explorer", style = MaterialTheme.typography.headlineMedium)
         LazyColumn {
-            item { Text("Project Root/") }
-            item { Text("  src/") }
-            item { Text("  build.gradle.kts") }
-            item { Text("  README.md") }
-            item { Text("  .gitignore") }
+            item { Text("📁 Project Root/") }
+            item { Text("  📁 src/") }
+            item { Text("    📄 MainActivity.kt") }
+            item { Text("  📄 build.gradle.kts") }
+            item { Text("  📄 README.md") }
+            item { Text("  📄 .gitignore") }
         }
     }
 }

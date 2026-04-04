@@ -15,19 +15,19 @@ import com.mobilecodespace.feature.onboarding.OnboardingScreen
 fun AppNavigation(startDestination: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
-        composable("onboarding") { 
+        composable(Screen.Onboarding.route) { 
             OnboardingScreen(viewModel = hiltViewModel()) 
         }
-        composable("home") { 
+        composable(Screen.Home.route) { 
             HomeScreen(viewModel = hiltViewModel()) 
         }
-        composable("editor") { 
+        composable(Screen.Editor.route) { 
             EditorScreen(viewModel = hiltViewModel()) 
         }
-        composable("fileexplorer") {
+        composable(Screen.FileExplorer.route) {
             FileExplorerScreen()
         }
-        composable("git") {
+        composable(Screen.Git.route) {
             GitScreen()
         }
     }
