@@ -1,0 +1,42 @@
+package com.mobilecodespace.feature.onboarding
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class OnboardingViewModel @Inject constructor() : ViewModel() {
+
+    private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.Permissions)
+    val uiState: StateFlow<OnboardingUiState> = _uiState
+
+    fun requestPermissions() {
+        // Hier würde die Logik zur Berechtigungsanfrage folgen
+        _uiState.value = OnboardingUiState.Downloading
+    }
+
+    fun startDownload() {
+        viewModelScope.launch {
+            // Hier würde die Logik zum Download von PRoot, OpenJDK etc. folgen
+            _uiState.value = OnboardingUiState.Installing
+        }
+    }
+
+    fun completeSetup() {
+        viewModelScope.launch {
+            // Hier würde die Logik zum Speichern des Status im DataStore folgen
+            _uiState.value = OnboardingUiState.Completed
+        }
+    }
+}
+
+sealed class OnboardingUiState {
+    object Permissions : OnboardingUiState()
+    object Downloading : OnboardingUiState()
+    object Installing : OnboardingUiState()
+    object Completed : OnboardingUiState()
+}
