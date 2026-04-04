@@ -23,18 +23,26 @@ class TerminalViewModel(application: Application) : AndroidViewModel(application
 
     private fun startTerminal() {
         viewModelScope.launch(Dispatchers.IO) {
-            prootManager.installProotBinary()
-            prootManager.setupRootfs()
-            process = prootManager.startProot()
-            inputStream = process?.inputStream
-            outputStream = process?.outputStream
+            try {
+                prootManager.installProotBinary()
+                prootManager.setupRootfs()
+                process = prootManager.startProot()
+                inputStream = process?.inputStream
+                outputStream = process?.outputStream
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     fun sendInput(input: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            outputStream?.write(input.toByteArray())
-            outputStream?.flush()
+            try {
+                outputStream?.write(input.toByteArray())
+                outputStream?.flush()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

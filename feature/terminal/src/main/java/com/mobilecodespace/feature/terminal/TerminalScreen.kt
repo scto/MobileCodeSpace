@@ -1,25 +1,34 @@
 package com.mobilecodespace.feature.terminal
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-// Hinweis: Hier würde die Termux-View Bibliothek importiert werden
-// import com.termux.view.TerminalView 
 
 @Composable
 fun TerminalScreen(viewModel: TerminalViewModel) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    // Dark Purple Theme Hintergrund
+    val darkPurple = Color(0xFF2D1B4E)
+
+    Column(modifier = Modifier.fillMaxSize().background(darkPurple)) {
         // Terminal View Container
-        Box(modifier = Modifier.weight(1f)) {
+        Box(modifier = Modifier.weight(1f).padding(8.dp)) {
             AndroidView(
                 factory = { context ->
                     // Hier würde die Initialisierung der Termux-View erfolgen
                     // TerminalView(context).apply { ... }
-                    android.widget.TextView(context).apply { text = "Terminal Placeholder" }
+                    android.widget.TextView(context).apply {
+                        text = "root@mobilecodespace:~$ "
+                        setTextColor(android.graphics.Color.WHITE)
+                        typeface = android.graphics.Typeface.MONOSPACE
+                        textSize = 14f
+                    }
                 },
                 modifier = Modifier.fillMaxSize()
             )
@@ -43,8 +52,11 @@ fun KeyboardBar(onKeyClick: (String) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(keys.size) { index ->
-            Button(onClick = { onKeyClick(keys[index]) }) {
-                Text(text = keys[index])
+            Button(
+                onClick = { onKeyClick(keys[index]) },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A2C7A))
+            ) {
+                Text(text = keys[index], color = Color.White)
             }
         }
     }
