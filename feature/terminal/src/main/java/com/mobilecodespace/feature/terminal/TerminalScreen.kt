@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.mobilecodespace.feature.terminal.components.TerminalToolbar
-import com.termux.terminal.TerminalSession
 import com.termux.view.TerminalView
 
 @Composable
@@ -30,8 +29,6 @@ fun TerminalScreen(viewModel: TerminalViewModel) {
     DisposableEffect(viewModel) {
         // In einer echten Implementierung würde hier eine TerminalSession erstellt
         // und mit viewModel.inputStream und viewModel.outputStream verbunden werden.
-        // Da TerminalSession eine komplexe Klasse aus der Termux-Library ist,
-        // wird hier die Verbindung angedeutet.
         
         onDispose {
             // Session aufräumen
