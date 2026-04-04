@@ -16,6 +16,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
+import io.github.rosemoe.sora.langs.treesitter.TreeSitterLanguage
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 
@@ -47,8 +48,16 @@ fun EditorScreen(viewModel: EditorViewModel) {
             
             // 2. TextMate & GrammarProvider Integration
             FileProviderRegistry.getInstance().setContext(context)
-            val language = TextMateLanguage.create("source.java", true)
+            
+            // Beispiel für Tree-sitter Integration (Java)
+            // In einer echten App würden hier die Tree-sitter Grammatiken geladen
+            val language = TreeSitterLanguage.create("java")
             setEditorLanguage(language)
+            
+            // 3. LSP Integration (Vorbereitung)
+            // Hier würde der LspLanguageProvider initialisiert werden
+            // val lspProvider = LspLanguageProvider(...)
+            // setEditorLanguage(lspProvider)
         }
     }
 
