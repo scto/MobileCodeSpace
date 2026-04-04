@@ -1,6 +1,7 @@
 package com.mobilecodespace.feature.editor
 
 import androidx.lifecycle.ViewModel
+import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
@@ -13,21 +14,48 @@ class EditorViewModel : ViewModel() {
     private val _isSaved = MutableStateFlow(true)
     val isSaved: StateFlow<Boolean> = _isSaved
 
+    // Referenz auf den Editor, um Aktionen auszuführen
+    private var editor: CodeEditor? = null
+
+    fun setEditor(editor: CodeEditor) {
+        this.editor = editor
+    }
+
     fun openFile(file: File) {
-        // Logik zum Öffnen der Datei
         _openFiles.value = _openFiles.value + file
     }
 
     fun saveFile(content: String) {
-        // Logik zum Speichern
+        // Logik zum Speichern der Datei
+        _isSaved.value = true
+    }
+
+    fun saveAll() {
+        // Logik zum Speichern aller offenen Dateien
         _isSaved.value = true
     }
 
     fun undo() {
-        // Logik für Undo
+        editor?.undo()
     }
 
     fun redo() {
-        // Logik für Redo
+        editor?.redo()
+    }
+
+    fun selectAll() {
+        editor?.selectAll()
+    }
+
+    fun cut() {
+        editor?.cut()
+    }
+
+    fun paste() {
+        editor?.paste()
+    }
+
+    fun formatCode() {
+        // Logik für Code-Formatierung (z.B. via LSP)
     }
 }
