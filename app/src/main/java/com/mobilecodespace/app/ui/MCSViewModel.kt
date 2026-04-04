@@ -17,7 +17,10 @@ class MCSViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun checkSetupStatus() {
-        // Hier würde die Logik zur Prüfung der Berechtigungen und PRoot-Installation implementiert
+        // TODO: Implementiere echte Prüfung:
+        // 1. Prüfe MANAGE_EXTERNAL_STORAGE Permission
+        // 2. Prüfe ob PRoot Binary existiert
+        // 3. Prüfe ob Rootfs existiert
         // Für den Anfang setzen wir es auf false, um das Onboarding zu zeigen
         _isSetupComplete.value = false
     }
