@@ -74,6 +74,10 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         editor?.cut()
     }
 
+    fun copy() {
+        editor?.copy()
+    }
+
     fun paste() {
         editor?.paste()
     }

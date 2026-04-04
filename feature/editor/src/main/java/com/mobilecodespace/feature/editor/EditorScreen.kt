@@ -4,10 +4,6 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -15,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.mobilecodespace.feature.editor.components.EditorToolbar
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.treesitter.TreeSitterLanguage
@@ -63,19 +60,15 @@ fun EditorScreen(viewModel: EditorViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Editor") },
-                actions = {
-                    IconButton(onClick = { viewModel.saveFile() }) {
-                        Icon(Icons.Default.Check, contentDescription = "Speichern")
-                    }
-                    IconButton(onClick = { viewModel.undo() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Rückgängig")
-                    }
-                    IconButton(onClick = { viewModel.formatCode() }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Formatieren")
-                    }
-                }
+            EditorToolbar(
+                onSave = { viewModel.saveFile() },
+                onUndo = { viewModel.undo() },
+                onRedo = { viewModel.redo() },
+                onFormat = { viewModel.formatCode() },
+                onSelectAll = { viewModel.selectAll() },
+                onCut = { viewModel.cut() },
+                onCopy = { viewModel.copy() },
+                onPaste = { viewModel.paste() }
             )
         }
     ) { paddingValues ->
