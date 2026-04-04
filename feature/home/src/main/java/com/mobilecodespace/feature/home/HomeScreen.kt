@@ -22,9 +22,15 @@ fun HomeScreen(viewModel: HomeViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         
         // Quick Actions
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            MCSCard { Text("New Project", modifier = Modifier.padding(16.dp)) }
-            MCSCard { Text("Open", modifier = Modifier.padding(16.dp)) }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                MCSCard(modifier = Modifier.weight(1f)) { Text("New Project", modifier = Modifier.padding(16.dp)) }
+                MCSCard(modifier = Modifier.weight(1f)) { Text("Open", modifier = Modifier.padding(16.dp)) }
+            }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                MCSCard(modifier = Modifier.weight(1f)) { Text("SDK Manager", modifier = Modifier.padding(16.dp)) }
+                MCSCard(modifier = Modifier.weight(1f)) { Text("Plugins", modifier = Modifier.padding(16.dp)) }
+            }
         }
         
         Spacer(modifier = Modifier.height(16.dp))
