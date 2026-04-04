@@ -1,15 +1,20 @@
 package com.mobilecodespace.feature.terminal
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilecodespace.core.data.proot.PRootManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
+import javax.inject.Inject
 
-class TerminalViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class TerminalViewModel @Inject constructor(
+    application: Application
+) : ViewModel() {
 
     private val prootManager = PRootManager(application)
     private var process: Process? = null
@@ -35,10 +40,10 @@ class TerminalViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun sendInput(input: String) {
+    fun sendKey(key: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                outputStream?.write(input.toByteArray())
+                outputStream?.write(key.toByteArray())
                 outputStream?.flush()
             } catch (e: Exception) {
                 e.printStackTrace()
