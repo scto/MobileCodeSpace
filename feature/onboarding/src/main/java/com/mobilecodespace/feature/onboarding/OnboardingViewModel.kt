@@ -17,18 +17,21 @@ class OnboardingViewModel @Inject constructor(
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
     fun requestPermissions() {
-        // Hier würde die Logik zur Berechtigungsanfrage folgen
+        // In einer echten Implementierung würde hier die Berechtigungsanfrage gestartet.
+        // Wir simulieren den Erfolg und gehen zum Download über.
         _uiState.value = OnboardingUiState.Downloading
     }
 
     fun startDownload() {
         viewModelScope.launch {
-            // Hier würde die Logik zum Download von PRoot, OpenJDK etc. folgen
             _uiState.value = OnboardingUiState.Installing
+            // Simulation des Downloads und der Installation
+            kotlinx.coroutines.delay(2000)
+            completeSetup()
         }
     }
 
-    fun completeSetup() {
+    private fun completeSetup() {
         viewModelScope.launch {
             dataStoreManager.setSetupComplete(true)
             _uiState.value = OnboardingUiState.Completed
