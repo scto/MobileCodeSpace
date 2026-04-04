@@ -13,6 +13,7 @@ navigationCompose = "2.7.7"
 room = "2.6.1"
 dataStore = "1.0.0"
 kotlin = "1.9.22"
+agp = "8.2.2"
 
 [libraries]
 # SoraEditor
@@ -36,7 +37,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
 
 [plugins]
-android-application = { id = "com.android.application", version = "8.2.2" }
-android-library = { id = "com.android.library", version = "8.2.2" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
