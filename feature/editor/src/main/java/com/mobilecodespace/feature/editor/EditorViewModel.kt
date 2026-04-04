@@ -22,7 +22,10 @@ class EditorViewModel : ViewModel() {
     }
 
     fun openFile(file: File) {
-        _openFiles.value = _openFiles.value + file
+        if (!_openFiles.value.contains(file)) {
+            _openFiles.value = _openFiles.value + file
+        }
+        // TODO: Inhalt der Datei in den Editor laden
     }
 
     fun saveFile(content: String) {
