@@ -9,7 +9,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor() : ViewModel() {
+class OnboardingViewModel @Inject constructor(
+    private val dataStoreManager: DataStoreManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.Permissions)
     val uiState: StateFlow<OnboardingUiState> = _uiState
@@ -28,7 +30,7 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
 
     fun completeSetup() {
         viewModelScope.launch {
-            // Hier würde die Logik zum Speichern des Status im DataStore folgen
+            dataStoreManager.setSetupComplete(true)
             _uiState.value = OnboardingUiState.Completed
         }
     }
