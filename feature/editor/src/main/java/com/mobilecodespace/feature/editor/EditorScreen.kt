@@ -1,6 +1,8 @@
 package com.mobilecodespace.feature.editor
 
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -13,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.langs.treesitter.TreeSitterLanguage
@@ -52,11 +53,6 @@ fun EditorScreen(viewModel: EditorViewModel) {
             // Beispiel für Tree-sitter Integration (Java)
             val language = TreeSitterLanguage.create("java")
             setEditorLanguage(language)
-            
-            // 3. LSP Integration (Vorbereitung)
-            // Hier würde der LspLanguageProvider initialisiert werden, sobald die LSP-Bibliothek eingebunden ist
-            // val lspProvider = LspLanguageProvider(this)
-            // setEditorLanguage(lspProvider)
         }
     }
 
@@ -83,12 +79,14 @@ fun EditorScreen(viewModel: EditorViewModel) {
             )
         }
     ) { paddingValues ->
-        AndroidView(
-            factory = { editor },
-            modifier = Modifier.padding(paddingValues),
-            update = { view ->
-                // Hier könnten LSP-Provider oder Grammar-Provider bei State-Änderungen aktualisiert werden
-            }
-        )
+        Column(modifier = Modifier.padding(paddingValues)) {
+            AndroidView(
+                factory = { editor },
+                modifier = Modifier.fillMaxSize(),
+                update = { view ->
+                    // Hier könnten LSP-Provider oder Grammar-Provider bei State-Änderungen aktualisiert werden
+                }
+            )
+        }
     }
 }

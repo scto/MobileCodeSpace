@@ -2,6 +2,7 @@ package com.mobilecodespace.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,8 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import javax.inject.Inject
 
-class EditorViewModel : ViewModel() {
+@HiltViewModel
+class EditorViewModel @Inject constructor() : ViewModel() {
 
     private val _openFiles = MutableStateFlow<List<File>>(emptyList())
     val openFiles: StateFlow<List<File>> = _openFiles
