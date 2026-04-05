@@ -67,16 +67,14 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
                 })
             }
             is OnboardingUiState.Downloading -> {
-                Text("Lade Dateien herunter...")
-                Spacer(modifier = Modifier.height(16.dp))
-                MCSProgressBar(progress = 0.5f)
+                Text("Bereit zum Download...")
                 Spacer(modifier = Modifier.height(16.dp))
                 MCSButton(text = "Start Download", onClick = { viewModel.startDownload() })
             }
             is OnboardingUiState.Installing -> {
                 Text("Installiere Umgebung...")
                 Spacer(modifier = Modifier.height(16.dp))
-                MCSProgressBar(progress = 0.8f)
+                MCSProgressBar(progress = 0.5f)
             }
             is OnboardingUiState.Completed -> {
                 Text("Setup abgeschlossen!")
