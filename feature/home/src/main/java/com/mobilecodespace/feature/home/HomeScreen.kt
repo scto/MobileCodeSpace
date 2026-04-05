@@ -24,12 +24,28 @@ fun HomeScreen(viewModel: HomeViewModel) {
         // Quick Actions
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                MCSCard(modifier = Modifier.weight(1f)) { Text("New Project", modifier = Modifier.padding(16.dp)) }
-                MCSCard(modifier = Modifier.weight(1f)) { Text("Open", modifier = Modifier.padding(16.dp)) }
+                MCSCard(modifier = Modifier.weight(1f)) { 
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("New Project", style = MaterialTheme.typography.titleSmall)
+                    }
+                }
+                MCSCard(modifier = Modifier.weight(1f)) { 
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Open", style = MaterialTheme.typography.titleSmall)
+                    }
+                }
             }
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                MCSCard(modifier = Modifier.weight(1f)) { Text("SDK Manager", modifier = Modifier.padding(16.dp)) }
-                MCSCard(modifier = Modifier.weight(1f)) { Text("Plugins", modifier = Modifier.padding(16.dp)) }
+                MCSCard(modifier = Modifier.weight(1f)) { 
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("SDK Manager", style = MaterialTheme.typography.titleSmall)
+                    }
+                }
+                MCSCard(modifier = Modifier.weight(1f)) { 
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Plugins", style = MaterialTheme.typography.titleSmall)
+                    }
+                }
             }
         }
         
