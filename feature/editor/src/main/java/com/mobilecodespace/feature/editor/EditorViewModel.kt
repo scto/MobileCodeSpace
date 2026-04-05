@@ -54,7 +54,6 @@ class EditorViewModel @Inject constructor() : ViewModel() {
     }
 
     fun saveAll() {
-        // In einer echten Implementierung würden hier alle offenen Dateien gespeichert
         saveFile()
     }
 
@@ -84,7 +83,5 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
     fun formatCode() {
         // LSP-Integration für Formatierung
-        // Hier würde der LSP-Client aufgerufen werden, um das Dokument zu formatieren
-        // editor?.lspClient?.formatDocument()
     }
 }

@@ -77,7 +77,6 @@ fun EditorScreen(viewModel: EditorViewModel) {
                 factory = { editor },
                 modifier = Modifier.fillMaxSize(),
                 update = { view ->
-                    // Hier könnten LSP-Provider oder Grammar-Provider bei State-Änderungen aktualisiert werden
                 }
             )
         }
