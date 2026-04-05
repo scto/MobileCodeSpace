@@ -1,249 +1,105 @@
-Aider Prompt: MobileCodeSpace Professional IDE Setup (v2.2)
+Aider Master-Prompt: MobileCodeSpace Professional IDE
 
 Du bist ein Senior Android Software Architekt. Wir bauen "MobileCodeSpace" (MCS), eine hochperformante IDE für Android. Technologie: Kotlin, Jetpack Compose, Multi-Modul-Architektur, Hilt (DI), MVI/MVVM, Flow. Design: Dark Purple Theme (#2D1B4E) gemäß Referenzbildern. Sprache: Deutsche UI-Texte und deutsche Code-Kommentare.
 
-SCHRITT 1 bis 9: (Zusammenfassung der vorherigen Schritte)
+SCHRITT 1: Version Catalog & Modul-Struktur
 
-* Modul-Struktur: :app, :core:ui, :core:data, :core:di, :core:domain, :core:models, :core:navigation, :core:resources, :feature:home, :feature:onboarding, :feature:editor, :feature:terminal, :feature:fileexplorer, :feature:git, :feature:settings.
+1. Erstelle/Aktualisiere gradle/libs.versions.toml:
 
-* Integration von SoraEditor, PRoot (Ubuntu), Terminal (Termux-View) und LSP.
+   * SoraEditor (Rosemoe): editor, language-treesitter, language-textmate, language-java, editor-lsp.
 
-* Onboarding-Flow für Berechtigungen und Tool-Installation.
+   * Terminal: termux-view.
 
-SCHRITT 10: Gradle & Projekt-Konfiguration (Build-Vervollständigung)
+   * AndroidX: compose-bom, hilt-android, navigation-compose, room, datastore-preferences.
 
-10.1 Root build.gradle.kts
+   * Plugins: android-application, android-library, kotlin-android, hilt-android, kotlin-serialization.
 
-Erstelle die build.gradle.kts im Hauptverzeichnis:
+2. Initialisiere folgende 15 Module in settings.gradle.kts:
 
-plugins {
+   * :app (Root-Activity, Manifest, Application)
 
-   alias(libs.plugins.android.application) apply false
+   * :core:ui (Globales Theme & Shared Components)
 
-   alias(libs.plugins.android.library) apply false
+   * :core:data, :core:di, :core:domain, :core:models, :core:navigation, :core:resources
 
-   alias(libs.plugins.kotlin.android) apply false
+   * :feature:home (Dashboard mit Quick Actions & Recent Projects)
 
-   alias(libs.plugins.hilt.android) apply false
+   * :feature:onboarding (Setup: Permissions & PRoot-Installation)
 
-   alias(libs.plugins.kotlin.serialization) apply false
+   * :feature:editor (SoraEditor Integration & LSP)
 
-}
+   * :feature:terminal (Ubuntu PRoot Shell)
 
+   * :feature:fileexplorer, :feature:git, :feature:settings
 
+SCHRITT 2: Projekt-Infrastruktur & Build-Stabilität
 
-10.2 settings.gradle.kts
+1. Root build.gradle.kts: Definiere Plugins (alias(libs.plugins...)) ohne sie anzuwenden.
 
-Konfiguriere die Modul-Inklusion korrekt:
+2. gradle.properties: Setze org.gradle.jvmargs=-Xmx4g, aktiviere parallel und configuration-cache.
 
-rootProject.name = "MobileCodeSpace"
+3. Modul-Builds: Erstelle für jedes Modul eine build.gradle.kts. Achte auf korrekte namespace Definitionen (z.B. com.mcs.core.ui), um AAPT-Ressourcen-Fehler zu vermeiden.
 
-include(":app")
+4. Hilt Setup: Erstelle MCSApplication mit @HiltAndroidApp.
 
-include(":core:ui")
+SCHRITT 3: Shared UI & Design System (:core:ui)
 
-include(":core:data")
+1. Theming: Implementiere MCSTheme (Primary: #2D1B4E, Secondary: #1A0F2E, Akzent: #A084DC).
 
-include(":core:di")
+2. Komponenten: - MCSCard: Abgerundete Karten (16dp) mit leichtem Border.
 
-include(":core:domain")
+   * MCSActionButton: Die Buttons für den Home-Screen ("New Project", "Open" etc.) mit Icon und Subtext.
 
-include(":core:models")
+   * ProjectListItem: Komponente für die "Recent Projects" Liste.
 
-include(":core:navigation")
+SCHRITT 4: PRoot & Ubuntu Backend (:core:data)
 
-include(":core:resources")
+1. PRootManager: - Logik zum Kopieren der proot Arm64-Binary aus Assets nach filesDir.
 
-include(":feature:home")
+   * Download/Extraktion eines Ubuntu Rootfs und JDK/Build-Tools.
 
-include(":feature:onboarding")
+   * Prozess-Start: chmod +x setzen und via ProcessBuilder mit den Flags -0 -b /sdcard -r <rootfs_path> starten.
 
-include(":feature:editor")
+2. Services: Erstelle einen PRootService, der die Shell-Instanz im Hintergrund am Leben hält.
 
-include(":feature:terminal")
+SCHRITT 5: SoraEditor Integration (:feature:editor)
 
-include(":feature:fileexplorer")
+1. EditorActivity & ViewModel: Verwalte geöffnete Dateien, LSP-Status und Undo/Redo-Stack.
 
-include(":feature:git")
+2. SoraEditor View: - Erstelle einen Compose-Wrapper für io.github.Rosemoe.sora-editor:editor.
 
-include(":feature:settings")
+   * Implementiere TextMateColorScheme, GrammarProvider (Tree-sitter) und LSP-Support.
 
+3. Funktionen: Implementiere Top-Bar Aktionen für Save, Save All, Undo, Redo, Cut, Copy, Paste, Format Code, Select All.
 
+SCHRITT 6: Terminal Feature (:feature:terminal)
 
-dependencyResolutionManagement {
+1. TerminalActivity & Screen: Hoste die termux-view.
 
-   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+2. Verknüpfung: Verbinde die Terminal-View mit dem Input/Output-Stream des PRoot-Ubuntu-Prozesses.
 
-   repositories {
+3. Toolbar: Erstelle eine Leiste für Sondertasten (ESC, CTRL, ALT, TAB, Pfeiltasten).
 
-       google()
+SCHRITT 7: Navigation & Flow-Logik (:app)
 
-       mavenCentral()
+1. MCSActivity: Hostet den zentralen NavHost.
 
-       maven { url = uri("[https://jitpack.io](https://jitpack.io)") }
+2. Einstiegs-Logik: - Prüfe beim Start: Sind Permissions (MANAGE_EXTERNAL_STORAGE) vorhanden? Ist Ubuntu installiert?
 
-   }
+   * Falls NEIN: Navigiere zu :feature:onboarding.
 
-}
+   * Falls JA: Navigiere zu :feature:home.
 
+3. Home-Screen Implementation: Setze das Design aus dem Screenshot um (Quick Actions Karten, Recent Projects Liste mit Pfaden wie /storage/emulated/0/...).
 
+SCHRITT 8: Finalisierung & Build-Fixes
 
-10.3 gradle.properties
+1. AAPT Validierung: Stelle sicher, dass alle XML-Ressourcen (Drawables, Layouts) wohlgeformt sind und keine korrupten Proto-XMLs entstehen.
 
-Optimale Einstellungen für große Multi-Modul-Projekte:
+2. Manifest: Registriere alle Activities, Provider (MCSFileProvider, MCSDocumentsProvider) und den PRootService. Fordere alle benötigten Berechtigungen an.
 
-org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8 -XX:+UseParallelGC
+3. Dependency Check: Verifiziere, dass Feature-Module korrekt auf :core:ui, :core:domain, :core:models und :core:navigation zugreifen.
 
-android.useAndroidX=true
+4. Settings-Modul: Erstelle SettingsActivity, SettingsScreen und SettingsViewModel zur Konfiguration von Editor-Schriftgröße, Themes und Pfaden.
 
-android.nonTransitiveRClass=true
-
-android.enableJetifier=false
-
-kotlin.code.style=official
-
-org.gradle.parallel=true
-
-org.gradle.caching=true
-
-org.gradle.configuration-cache=true
-
-
-
-10.4 Beispiel: Build-Datei für ein Feature-Modul (:feature:editor)
-
-plugins {
-
-   alias(libs.plugins.android.library)
-
-   alias(libs.plugins.kotlin.android)
-
-   alias(libs.plugins.hilt.android)
-
-   kotlin("kapt")
-
-}
-
-
-
-android {
-
-   namespace = "com.mcs.feature.editor"
-
-   compileSdk = 34
-
-
-
-   defaultConfig {
-
-       minSdk = 26
-
-       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-   }
-
-
-
-   buildFeatures {
-
-       compose = true
-
-   }
-
-   composeOptions {
-
-       kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-
-   }
-
-}
-
-
-
-dependencies {
-
-   implementation(project(":core:ui"))
-
-   implementation(project(":core:domain"))
-
-   implementation(project(":core:models"))
-
-   implementation(project(":core:navigation"))
-
-
-
-   // SoraEditor & LSP
-
-   implementation(libs.sora.editor)
-
-   implementation(libs.sora.language.treesitter)
-
-   implementation(libs.sora.language.textmate)
-
-   implementation(libs.sora.editor.lsp)
-
-
-
-   implementation(libs.androidx.compose.ui)
-
-   implementation(libs.androidx.hilt.navigation.compose)
-
-   implementation(libs.hilt.android)
-
-   kapt(libs.hilt.compiler)
-
-}
-
-
-
-10.5 Beispiel: Build-Datei für das :app Modul
-
-plugins {
-
-   alias(libs.plugins.android.application)
-
-   alias(libs.plugins.kotlin.android)
-
-   alias(libs.plugins.hilt.android)
-
-   kotlin("kapt")
-
-}
-
-
-
-android {
-
-   namespace = "com.mcs.app"
-
-   compileSdk = 34
-
-   // ... Standard Application Config ...
-
-}
-
-
-
-dependencies {
-
-   implementation(project(":core:ui"))
-
-   implementation(project(":core:di"))
-
-   implementation(project(":feature:home"))
-
-   implementation(project(":feature:onboarding"))
-
-   implementation(project(":feature:editor"))
-
-   implementation(project(":feature:terminal"))
-
-   // ... Weitere Feature-Module ...
-
-   
-
-   implementation(libs.hilt.android)
-
-   kapt(libs.hilt.compiler)
-
-}
+Führe diese Schritte systematisch aus, um eine vollständig funktionale, multi-modulare Android IDE zu erstellen.
