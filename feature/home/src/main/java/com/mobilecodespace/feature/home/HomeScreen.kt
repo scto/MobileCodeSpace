@@ -35,6 +35,10 @@ fun HomeScreen(viewModel: HomeViewModel) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
+        Text(text = "Recent Projects", style = MaterialTheme.typography.titleLarge)
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
         // Recent Projects
         LazyColumn {
             items(projects) { project ->

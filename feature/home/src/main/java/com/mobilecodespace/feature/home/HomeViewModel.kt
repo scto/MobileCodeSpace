@@ -13,11 +13,10 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     val recentProjects: StateFlow<List<Project>> = _recentProjects
 
     init {
-        // Hier würde die Logik zum Laden der Projekte aus dem Dateisystem folgen
-        // Beispiel-Daten für die UI-Entwicklung
+        // Mock-Daten für die Anzeige
         _recentProjects.value = listOf(
-            Project("MyAndroidApp", "/storage/emulated/0/Projects/MyAndroidApp", "2024-05-20 10:00"),
-            Project("ComposeLibrary", "/storage/emulated/0/Projects/ComposeLibrary", "2024-05-19 15:30")
+            Project("MobileCodeSpace", "/storage/emulated/0/Projects/MCS", "10 min ago"),
+            Project("ComposeDemo", "/storage/emulated/0/Projects/ComposeDemo", "2 hours ago")
         )
     }
 }
