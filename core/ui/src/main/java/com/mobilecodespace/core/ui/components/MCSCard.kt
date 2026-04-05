@@ -10,7 +10,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mobilecodespace.core.ui.theme.AccentPurple
 
 @Composable
 fun MCSCard(
@@ -20,7 +19,7 @@ fun MCSCard(
     Card(
         modifier = modifier.padding(8.dp),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, AccentPurple.copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

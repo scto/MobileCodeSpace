@@ -22,6 +22,6 @@ fun MCSProgressBar(
             .height(8.dp)
             .clip(RoundedCornerShape(4.dp)),
         color = MaterialTheme.colorScheme.primary,
-        trackColor = MaterialTheme.colorScheme.surface
+        trackColor = MaterialTheme.colorScheme.secondary
     )
 }
