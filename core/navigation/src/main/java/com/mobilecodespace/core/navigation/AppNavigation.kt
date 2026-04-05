@@ -25,7 +25,10 @@ fun AppNavigation(startDestination: String) {
             EditorScreen(viewModel = hiltViewModel()) 
         }
         composable(Screen.FileExplorer.route) {
-            FileExplorerScreen()
+            FileExplorerScreen(onFileClick = { fileName ->
+                // Navigation zum Editor mit Datei-Kontext
+                navController.navigate(Screen.Editor.route)
+            })
         }
         composable(Screen.Git.route) {
             GitScreen()
