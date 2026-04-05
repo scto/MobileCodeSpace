@@ -355,3 +355,77 @@ dependencies {
    kapt(libs.hilt.compiler)
 
 }
+
+SCHRITT 11: Globale Konstanten (:app)
+
+Erstelle im Modul :app die Datei MCSConstants.kt:
+
+object MCSConstants {
+
+   const val ROOT_PATH = "MCSProjects" // Der Name des Basis-Ordners für Projekte
+
+   const val WORKSPACE_FILE = "workspace.json"
+
+   const val PROPS_PATH = ".mcs"
+
+   const val EDITOR_PROPS_PATH = "$PROPS_PATH/.editor"
+
+   const val EDITOR_PROPS_FILE = "open_files.json" // Relativ zu EDITOR_PROPS_PATH
+
+   const val EDITOR_PROPS_FILE_BAK = "$EDITOR_PROPS_FILE.bak"
+
+}
+
+
+
+SCHRITT 12: Utility Modul (:core:utils)
+
+Implementiere FileUtils.kt für Datei- und Ordner-Operationen:
+
+* create, delete, rename, copy, move, load, save, chmod, getExtension.
+
+* Unterstützung für rekursive Verzeichnis-Operationen.
+
+SCHRITT 13: Ressourcen-Zentralisierung (:core:resources)
+
+Zentralisiere alle res-Ordner. Ersetze hartkodierte Texte im gesamten Projekt durch deutsche String-Ressourcen in :core:resources.
+
+SCHRITT 14: Sidepanel Komponente (:core:ui)
+
+Komponente mit horizontalem Menü oben, dynamischem Hauptinhalt (Slot) und Tab-Leiste unten zur View-Umschaltung.
+
+SCHRITT 15: File-Tree System (:feature:file-tree)
+
+Implementiere FileTreeView mit FileNode, showHidden, sortOrder und listType (File, Package, Module). Erfordert einen Pfad-Parameter vom Editor-Modul.
+
+SCHRITT 16: Editor UI Enhancements (:feature:editor)
+
+* Sidepanel-Trigger (Button oben links).
+
+* 3-Punkte-Menü (Open, Close, Save, Tools/Format/Search).
+
+SCHRITT 17: Projekt-Initialisierung & Metadaten-Logik
+
+Implementiere die Logik zur Erstellung eines neuen Projekts (in :core:data oder dem entsprechenden Repository):
+
+1. Ordner-Struktur: Wenn ein neues Projekt erstellt wird, erstelle das Hauptverzeichnis des Projekts.
+
+2. Metadaten-Verzeichnisse: - Erstelle innerhalb des Projektordners das Verzeichnis MCSConstants.ROOT_PATH (als Unterordner für interne Projektdaten).
+
+   * Erstelle darin die Struktur für MCSConstants.EDITOR_PROPS_PATH (z.B. .mcs/.editor).
+
+3. Initial-Dateien:
+
+   * Erstelle eine leere workspace.json (WORKSPACE_FILE) im internen Metadaten-Ordner.
+
+   * Erstelle die open_files.json (EDITOR_PROPS_FILE) und die zugehörige .bak Datei als initiale Platzhalter.
+
+4. Validierung: Nutze die Funktionen aus :core:utils, um sicherzustellen, dass die Verzeichnisse beschreibbar sind und die chmod-Rechte für die spätere Nutzung im PRoot-Ubuntu-Container korrekt gesetzt sind.
+
+SCHRITT 18: Build-Finalisierung
+
+* Überprüfe alle build.gradle.kts auf Namespace-Konsistenz.
+
+* Validiere die Ressourcen in :core:resources, um AAPT-Fehler ("failed to parse proto XML") zu vermeiden.
+
+* Stelle sicher, dass die MCSActivity die Navigation zwischen Onboarding (Installation von OpenJDK/Build-Tools) und Home-Screen korrekt steuert.
