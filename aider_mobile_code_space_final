@@ -1,4 +1,4 @@
-Aider Prompt: MobileCodeSpace Professional IDE Setup (v2)
+Aider Prompt: MobileCodeSpace Professional IDE Setup (v2.1)
 
 Du bist ein Senior Android Software Architekt. Wir bauen "MobileCodeSpace" (MCS), eine hochperformante IDE für Android. Technologie: Kotlin, Jetpack Compose, Multi-Modul-Architektur, Hilt (DI), MVI/MVVM, Flow. Design: Dark Purple Theme (#2D1B4E) gemäß Referenzbildern. Sprache: Deutsche UI-Texte und deutsche Code-Kommentare.
 
@@ -80,8 +80,6 @@ SCHRITT 5: Home Screen Dashboard (:feature:home)
 
    * Recent Projects: Liste mit Projektnamen, Pfad (z.B. /storage/emulated/0/...) und "Updated" Zeitstempel.
 
-   * Icons: Nutze Material Icons oder die im Screenshot sichtbaren Glyphen.
-
 SCHRITT 6: SoraEditor & LSP Integration (:feature:editor)
 
 1. EditorActivity: Hostet den High-End Editor.
@@ -106,6 +104,20 @@ SCHRITT 8: Dateisystem & Navigation (:core:data & :core:navigation)
 
 1. FileExplorer: Implementiere in :feature:fileexplorer die Baumansicht.
 
-2. Git Integration: Basis-Support für Git-Status in :feature:git.
+2. Navigation: Nutze Typ-sichere Routen zwischen Onboarding, Home und Editor.
 
-3. Navigation: Nutze Typ-sichere Routen zwischen Onboarding, Home und Editor.
+SCHRITT 9: Build-Stabilität & Finalisierung (WICHTIG)
+
+1. Dependency Check: Überprüfe alle build.gradle.kts Dateien. Stelle sicher, dass implementation(project(":core:ui")), :core:models, etc. korrekt in den Feature-Modulen vorhanden sind.
+
+2. Resource Linking (AAPT Fix): - Stelle sicher, dass keine korrupten XML-Ressourcen vorhanden sind.
+
+   * Benenne alle Icons konsistent (ic_launcher_background.xml etc.) und validiere die Vector-Drawables.
+
+   * Prüfe auf doppelte Ressourcen-IDs über Modulgrenzen hinweg.
+
+3. Hilt Setup: Verifiziere, dass jedes Modul mit @InstallIn korrekt konfiguriert ist und die MCSApplication die @HiltAndroidApp Annotation trägt.
+
+4. ProGuard/R8: Erstelle eine proguard-rules.pro für den SoraEditor und PRoot-Binaries, um zu verhindern, dass kritischer nativer Code oder Reflection-Logik entfernt wird.
+
+5. Finaler Build-Test: Führe einen clean und assembleDebug Task durch. Behebe alle Lint-Fehler und Namespace-Konflikte in den AndroidManifest.xml Dateien der Submodule.
