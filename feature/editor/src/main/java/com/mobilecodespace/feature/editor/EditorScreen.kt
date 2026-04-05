@@ -46,10 +46,6 @@ fun EditorScreen(viewModel: EditorViewModel) {
             
             // 2. TextMate & GrammarProvider Integration
             FileProviderRegistry.getInstance().setContext(context)
-            
-            // Beispiel für Tree-sitter Integration (Java)
-            val language = TreeSitterLanguage.create("java")
-            setEditorLanguage(language)
         }
     }
 

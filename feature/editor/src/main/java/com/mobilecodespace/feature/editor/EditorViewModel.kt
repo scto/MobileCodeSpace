@@ -35,11 +35,27 @@ class EditorViewModel @Inject constructor() : ViewModel() {
             }
             editor?.setText(content)
             currentFile = file
+            
+            // Sprach-Erkennung basierend auf Dateiendung
+            val language = when (file.extension) {
+                "java" -> "java"
+                "kt" -> "kotlin"
+                "cpp", "c" -> "cpp"
+                else -> "text"
+            }
+            
+            // Hier würde die LSP-Initialisierung für die erkannte Sprache folgen
+            startLsp(language)
+            
             if (!_openFiles.value.contains(file)) {
                 _openFiles.value = _openFiles.value + file
             }
             _isSaved.value = true
         }
+    }
+
+    private fun startLsp(language: String) {
+        // TODO: LSP-Client für die Sprache starten
     }
 
     fun saveFile() {
