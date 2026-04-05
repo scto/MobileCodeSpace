@@ -41,6 +41,9 @@ class ProjectRepository @Inject constructor() {
             val openFilesBakPath = "$editorDirPath/${MCSConstants.EDITOR_PROPS_FILE_BAK}"
             if (!FileUtils.createFile(openFilesBakPath, "[]")) return false
 
+            // 4. Validierung: Setze Ausführungsrechte für das Metadaten-Verzeichnis
+            FileUtils.setExecutable(mcsDirPath)
+
             return true
         } catch (e: Exception) {
             e.printStackTrace()
