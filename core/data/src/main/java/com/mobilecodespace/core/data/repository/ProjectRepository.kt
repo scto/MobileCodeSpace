@@ -42,6 +42,7 @@ class ProjectRepository @Inject constructor() {
             if (!FileUtils.createFile(openFilesBakPath, "[]")) return false
 
             // 4. Validierung: Setze Ausführungsrechte für das Metadaten-Verzeichnis
+            // Dies ist wichtig für PRoot, damit es auf die Metadaten zugreifen kann
             FileUtils.setExecutable(mcsDirPath)
 
             return true
