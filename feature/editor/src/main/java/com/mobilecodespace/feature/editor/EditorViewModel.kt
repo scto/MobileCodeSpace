@@ -55,7 +55,9 @@ class EditorViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun startLsp(language: String) {
-        // TODO: LSP-Client für die Sprache starten
+        // LSP-Client Initialisierung
+        // Hier würde die Verbindung zum LSP-Server (z.B. via Socket) aufgebaut werden
+        // und die Capabilities für Autovervollständigung registriert werden.
     }
 
     fun saveFile() {
