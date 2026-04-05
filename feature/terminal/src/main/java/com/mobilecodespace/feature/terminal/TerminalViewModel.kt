@@ -32,8 +32,6 @@ class TerminalViewModel @Inject constructor(
                 val process = prootManager.startProot()
                 
                 // Initialisierung der TerminalSession
-                // Hinweis: Die genaue API von TerminalSession kann je nach Version variieren.
-                // Hier wird angenommen, dass die Session den Prozess verwaltet.
                 session = TerminalSession(
                     process,
                     null, // cwd
