@@ -4,3 +4,11 @@
 
 # PRoot
 -keep class com.mobilecodespace.core.data.proot.** { *; }
+
+# Hilt/Dagger
+-keep class dagger.** { *; }
+-keep class javax.inject.** { *; }
+-keep class hilt_aggregated_deps.** { *; }
+
+# Jetpack Compose
+-keep class androidx.compose.** { *; }
