@@ -1,7 +1,7 @@
 plugins {
    alias(libs.plugins.android.application)
    alias(libs.plugins.kotlin.android)
-   alias(libs.plugins.hilt.android)
+   alias(libs.plugins.hilt)
    kotlin("kapt")
 }
 
@@ -21,11 +21,13 @@ android {
 dependencies {
    implementation(project(":core:ui"))
    implementation(project(":core:di"))
+   implementation(project(":core:utils"))
+   implementation(project(":core:data"))
    implementation(project(":feature:home"))
    implementation(project(":feature:onboarding"))
    implementation(project(":feature:editor"))
    implementation(project(":feature:terminal"))
    
-   implementation(libs.hilt.android)
-   kapt(libs.hilt.compiler)
+   implementation(libs.google.hilt.android)
+   kapt(libs.google.hilt.compiler)
 }

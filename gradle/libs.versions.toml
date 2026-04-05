@@ -8,6 +8,7 @@ termuxView = "0.12.0"
 
 # Android/Compose
 composeBom = "2024.02.00"
+composeCompiler = "1.5.8"
 hilt = "2.50"
 navigationCompose = "2.7.7"
 room = "2.6.1"
@@ -15,13 +16,14 @@ dataStore = "1.0.0"
 kotlin = "1.9.22"
 agp = "8.2.2"
 ksp = "1.9.22-1.0.17"
+kotlinSerialization = "1.6.2"
 
 [libraries]
 # SoraEditor
-sora-editor-core = { group = "io.github.Rosemoe.sora-editor", name = "editor", version.ref = "soraEditor" }
-sora-editor-language-textmate = { group = "io.github.Rosemoe.sora-editor", name = "language-textmate", version.ref = "soraEditor" }
-sora-editor-language-treesitter = { group = "io.github.Rosemoe.sora-editor", name = "language-treesitter", version.ref = "soraEditor" }
-sora-editor-language-java = { group = "io.github.Rosemoe.sora-editor", name = "language-java", version.ref = "soraEditor" }
+sora-editor = { group = "io.github.Rosemoe.sora-editor", name = "editor", version.ref = "soraEditor" }
+sora-language-textmate = { group = "io.github.Rosemoe.sora-editor", name = "language-textmate", version.ref = "soraEditor" }
+sora-language-treesitter = { group = "io.github.Rosemoe.sora-editor", name = "language-treesitter", version.ref = "soraEditor" }
+sora-language-java = { group = "io.github.Rosemoe.sora-editor", name = "language-java", version.ref = "soraEditor" }
 sora-editor-lsp = { group = "io.github.Rosemoe.sora-editor", name = "editor-lsp", version.ref = "soraEditorLsp" }
 
 # Terminal
@@ -29,6 +31,7 @@ termux-view = { group = "com.termux", name = "termux-view", version.ref = "termu
 
 # AndroidX
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -40,9 +43,13 @@ androidx-datastore-preferences = { group = "androidx.datastore", name = "datasto
 google-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 google-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 
+# Kotlin
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
