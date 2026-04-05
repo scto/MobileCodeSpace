@@ -52,7 +52,7 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        when (uiState) {
+        when (val state = uiState) {
             is OnboardingUiState.Permissions -> {
                 Text("Berechtigungen erforderlich")
                 Spacer(modifier = Modifier.height(16.dp))
@@ -78,6 +78,11 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
             }
             is OnboardingUiState.Completed -> {
                 Text("Setup abgeschlossen!")
+            }
+            is OnboardingUiState.Error -> {
+                Text("Fehler: ${state.message}")
+                Spacer(modifier = Modifier.height(16.dp))
+                MCSButton(text = "Erneut versuchen", onClick = { viewModel.startDownload() })
             }
         }
     }

@@ -38,7 +38,7 @@ class OnboardingViewModel @Inject constructor(
                     completeSetup()
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    // Fehlerbehandlung könnte hier ergänzt werden
+                    _uiState.value = OnboardingUiState.Error(e.message ?: "Ein unbekannter Fehler ist aufgetreten.")
                 }
             }
         }
@@ -57,4 +57,5 @@ sealed class OnboardingUiState {
     object Downloading : OnboardingUiState()
     object Installing : OnboardingUiState()
     object Completed : OnboardingUiState()
+    data class Error(val message: String) : OnboardingUiState()
 }
