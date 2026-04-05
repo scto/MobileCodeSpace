@@ -32,10 +32,18 @@ class OnboardingViewModel @Inject constructor(
             _uiState.value = OnboardingUiState.Installing
             withContext(Dispatchers.IO) {
                 try {
-                    // Installation von PRoot und Setup des Rootfs
-                    // In einer echten Implementierung würden hier auch OpenJDK und Build-Tools geladen
+                    // 1. Installation von PRoot
                     prootManager.installProotBinary()
+                    
+                    // 2. Setup des Rootfs
                     prootManager.setupRootfs()
+                    
+                    // 3. TODO: Download & Extraktion von OpenJDK
+                    // Hier würde die Logik für den Download und die Installation von OpenJDK folgen
+                    
+                    // 4. TODO: Download & Extraktion von Android Build-Tools
+                    // Hier würde die Logik für den Download und die Installation der Build-Tools folgen
+                    
                     completeSetup()
                 } catch (e: Exception) {
                     e.printStackTrace()
