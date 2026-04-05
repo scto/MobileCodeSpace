@@ -2,6 +2,7 @@ package com.mobilecodespace.core.data.repository
 
 import com.mobilecodespace.app.MCSConstants
 import com.mobilecodespace.core.utils.FileUtils
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,8 +15,10 @@ class ProjectRepository @Inject constructor() {
      */
     fun initializeProjectStructure(projectRootPath: String): Boolean {
         try {
-            // 1. Hauptverzeichnis erstellen
-            if (!FileUtils.createDirectory(projectRootPath)) return false
+            // 1. Hauptverzeichnis erstellen und auf Schreibrechte prüfen
+            val rootDir = File(projectRootPath)
+            if (!rootDir.exists() && !rootDir.mkdirs()) return false
+            if (!rootDir.canWrite()) return false
 
             // 2. Metadaten-Verzeichnisse erstellen
             // Struktur: projectRoot/.mcs/.editor
@@ -28,15 +31,15 @@ class ProjectRepository @Inject constructor() {
             // 3. Initial-Dateien erstellen
             // workspace.json im .mcs Ordner
             val workspaceFile = "$mcsDirPath/${MCSConstants.WORKSPACE_FILE}"
-            FileUtils.createFile(workspaceFile, "{}")
+            if (!FileUtils.createFile(workspaceFile, "{}")) return false
 
             // open_files.json im .mcs/.editor Ordner
             val openFilesPath = "$editorDirPath/${MCSConstants.EDITOR_PROPS_FILE}"
-            FileUtils.createFile(openFilesPath, "[]")
+            if (!FileUtils.createFile(openFilesPath, "[]")) return false
 
             // open_files.json.bak im .mcs/.editor Ordner
             val openFilesBakPath = "$editorDirPath/${MCSConstants.EDITOR_PROPS_FILE_BAK}"
-            FileUtils.createFile(openFilesBakPath, "[]")
+            if (!FileUtils.createFile(openFilesBakPath, "[]")) return false
 
             return true
         } catch (e: Exception) {
