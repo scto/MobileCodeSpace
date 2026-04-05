@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -16,10 +17,11 @@ import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorScreen(viewModel: EditorViewModel) {
+fun EditorScreen(viewModel: EditorViewModel, filePath: String?) {
     val context = LocalContext.current
     
     val editor = remember {
@@ -45,6 +47,12 @@ fun EditorScreen(viewModel: EditorViewModel) {
             
             // 2. TextMate & GrammarProvider Integration
             FileProviderRegistry.getInstance().setContext(context)
+        }
+    }
+
+    LaunchedEffect(filePath) {
+        if (!filePath.isNullOrEmpty()) {
+            viewModel.openFile(File(filePath))
         }
     }
 

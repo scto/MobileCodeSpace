@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 
 data class FileItem(
     val name: String, 
+    val path: String,
     val isDirectory: Boolean, 
     val children: List<FileItem> = emptyList(),
     var isExpanded: Boolean = false
@@ -24,10 +25,10 @@ fun FileExplorerScreen(onFileClick: (String) -> Unit = {}) {
     var rootItems by remember {
         mutableStateOf(
             listOf(
-                FileItem("src", true, listOf(FileItem("MainActivity.kt", false))),
-                FileItem("build.gradle.kts", false),
-                FileItem("README.md", false),
-                FileItem(".gitignore", false)
+                FileItem("src", "/src", true, listOf(FileItem("MainActivity.kt", "/src/MainActivity.kt", false))),
+                FileItem("build.gradle.kts", "/build.gradle.kts", false),
+                FileItem("README.md", "/README.md", false),
+                FileItem(".gitignore", "/.gitignore", false)
             )
         )
     }
@@ -67,7 +68,7 @@ fun FileRow(item: FileItem, onFileClick: (String) -> Unit, onToggle: () -> Unit)
                 .padding(vertical = 4.dp)
                 .clickable { 
                     if (item.isDirectory) onToggle() 
-                    else onFileClick(item.name) 
+                    else onFileClick(item.path) 
                 },
             verticalAlignment = Alignment.CenterVertically
         ) {
