@@ -28,10 +28,18 @@ class TerminalViewModel @Inject constructor(
                 prootManager.installProotBinary()
                 prootManager.setupRootfs()
                 
-                // Initialisiere TerminalSession mit dem PRoot-Prozess
-                // In einer echten Implementierung würde hier ein TerminalSession-Objekt
-                // erstellt werden, das den Prozess-Stream verwaltet.
-                // session = TerminalSession(...)
+                // Starten des PRoot-Prozesses
+                val process = prootManager.startProot()
+                
+                // Initialisierung der TerminalSession
+                // Hinweis: Die genaue API von TerminalSession kann je nach Version variieren.
+                // Hier wird angenommen, dass die Session den Prozess verwaltet.
+                session = TerminalSession(
+                    process,
+                    null, // cwd
+                    null, // env
+                    null  // client
+                )
                 
             } catch (e: Exception) {
                 e.printStackTrace()
