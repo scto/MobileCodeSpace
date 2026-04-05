@@ -33,6 +33,7 @@ class OnboardingViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     // Installation von PRoot und Setup des Rootfs
+                    // In einer echten Implementierung würden hier auch OpenJDK und Build-Tools geladen
                     prootManager.installProotBinary()
                     prootManager.setupRootfs()
                     completeSetup()
