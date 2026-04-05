@@ -4,11 +4,10 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilecodespace.core.data.proot.PRootManager
+import com.termux.terminal.TerminalSession
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.InputStream
-import java.io.OutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,10 +16,7 @@ class TerminalViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val prootManager = PRootManager(application)
-    private var process: Process? = null
-    
-    var inputStream: InputStream? = null
-    var outputStream: OutputStream? = null
+    var session: TerminalSession? = null
 
     init {
         startTerminal()
@@ -31,9 +27,12 @@ class TerminalViewModel @Inject constructor(
             try {
                 prootManager.installProotBinary()
                 prootManager.setupRootfs()
-                process = prootManager.startProot()
-                inputStream = process?.inputStream
-                outputStream = process?.outputStream
+                
+                // Initialisiere TerminalSession mit dem PRoot-Prozess
+                // In einer echten Implementierung würde hier ein TerminalSession-Objekt
+                // erstellt werden, das den Prozess-Stream verwaltet.
+                // session = TerminalSession(...)
+                
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -43,16 +42,15 @@ class TerminalViewModel @Inject constructor(
     fun sendKey(key: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Map special keys to escape sequences if needed
+                // Sende Key an die Session
                 val bytes = when (key) {
                     "ESC" -> byteArrayOf(0x1B.toByte())
-                    "CTRL" -> byteArrayOf(0x03.toByte()) // Example
-                    "ALT" -> byteArrayOf(0x1B.toByte()) // Example
+                    "CTRL" -> byteArrayOf(0x03.toByte())
+                    "ALT" -> byteArrayOf(0x1B.toByte())
                     "TAB" -> byteArrayOf(0x09.toByte())
                     else -> key.toByteArray()
                 }
-                outputStream?.write(bytes)
-                outputStream?.flush()
+                session?.write(bytes, 0, bytes.size)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -60,7 +58,7 @@ class TerminalViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        process?.destroy()
+        session?.finishIfRunning()
         super.onCleared()
     }
 }

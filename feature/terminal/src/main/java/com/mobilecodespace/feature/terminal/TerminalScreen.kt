@@ -27,11 +27,13 @@ fun TerminalScreen(viewModel: TerminalViewModel) {
     }
 
     DisposableEffect(viewModel) {
-        // In einer echten Implementierung würde hier eine TerminalSession erstellt
-        // und mit viewModel.inputStream und viewModel.outputStream verbunden werden.
+        // Verbinde die TerminalSession mit der View
+        viewModel.session?.let { session ->
+            terminalView.attachSession(session)
+        }
         
         onDispose {
-            // Session aufräumen
+            terminalView.detachSession()
         }
     }
 
