@@ -103,3 +103,255 @@ SCHRITT 8: Finalisierung & Build-Fixes
 4. Settings-Modul: Erstelle SettingsActivity, SettingsScreen und SettingsViewModel zur Konfiguration von Editor-Schriftgröße, Themes und Pfaden.
 
 Führe diese Schritte systematisch aus, um eine vollständig funktionale, multi-modulare Android IDE zu erstellen.
+SCHRITT 9: Build-Stabilität & Finalisierung (WICHTIG)
+
+1. Dependency Check: Überprüfe alle build.gradle.kts Dateien. Stelle sicher, dass implementation(project(":core:ui")), :core:models, etc. korrekt in den Feature-Modulen vorhanden sind.
+
+2. Resource Linking (AAPT Fix): - Stelle sicher, dass keine korrupten XML-Ressourcen vorhanden sind.
+
+   * Benenne alle Icons konsistent (ic_launcher_background.xml etc.) und validiere die Vector-Drawables.
+
+   * Prüfe auf doppelte Ressourcen-IDs über Modulgrenzen hinweg.
+
+3. Hilt Setup: Verifiziere, dass jedes Modul mit @InstallIn korrekt konfiguriert ist und die MCSApplication die @HiltAndroidApp Annotation trägt.
+
+4. ProGuard/R8: Erstelle eine proguard-rules.pro für den SoraEditor und PRoot-Binaries, um zu verhindern, dass kritischer nativer Code oder Reflection-Logik entfernt wird.
+
+5. Finaler Build-Test: Führe einen clean und assembleDebug Task durch. Behebe alle Lint-Fehler und Namespace-Konflikte in den AndroidManifest.xml Dateien der Submodule.
+SCHRITT 10: Gradle & Projekt-Konfiguration (Build-Vervollständigung)
+
+10.1 Root build.gradle.kts
+
+Erstelle die build.gradle.kts im Hauptverzeichnis:
+
+plugins {
+
+   alias(libs.plugins.android.application) apply false
+
+   alias(libs.plugins.android.library) apply false
+
+   alias(libs.plugins.kotlin.android) apply false
+
+   alias(libs.plugins.hilt.android) apply false
+
+   alias(libs.plugins.kotlin.serialization) apply false
+
+}
+
+
+
+10.2 settings.gradle.kts
+
+Konfiguriere die Modul-Inklusion korrekt:
+
+rootProject.name = "MobileCodeSpace"
+
+include(":app")
+
+include(":core:ui")
+
+include(":core:data")
+
+include(":core:di")
+
+include(":core:domain")
+
+include(":core:models")
+
+include(":core:navigation")
+
+include(":core:resources")
+
+include(":feature:home")
+
+include(":feature:onboarding")
+
+include(":feature:editor")
+
+include(":feature:terminal")
+
+include(":feature:fileexplorer")
+
+include(":feature:git")
+
+include(":feature:settings")
+
+
+
+dependencyResolutionManagement {
+
+   repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+
+   repositories {
+
+       google()
+
+       mavenCentral()
+
+       maven { url = uri("[https://jitpack.io](https://jitpack.io)") }
+
+   }
+
+}
+
+
+
+10.3 gradle.properties
+
+Optimale Einstellungen für große Multi-Modul-Projekte:
+
+org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8 -XX:+UseParallelGC
+
+android.useAndroidX=true
+
+android.nonTransitiveRClass=true
+
+android.enableJetifier=false
+
+kotlin.code.style=official
+
+org.gradle.parallel=true
+
+org.gradle.caching=true
+
+org.gradle.configuration-cache=true
+
+
+
+10.4 Beispiel: Build-Datei für ein Feature-Modul (:feature:editor)
+
+plugins {
+
+   alias(libs.plugins.android.library)
+
+   alias(libs.plugins.kotlin.android)
+
+   alias(libs.plugins.hilt.android)
+
+   kotlin("kapt")
+
+}
+
+
+
+android {
+
+   namespace = "com.mcs.feature.editor"
+
+   compileSdk = 34
+
+
+
+   defaultConfig {
+
+       minSdk = 26
+
+       testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+   }
+
+
+
+   buildFeatures {
+
+       compose = true
+
+   }
+
+   composeOptions {
+
+       kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+
+   }
+
+}
+
+
+
+dependencies {
+
+   implementation(project(":core:ui"))
+
+   implementation(project(":core:domain"))
+
+   implementation(project(":core:models"))
+
+   implementation(project(":core:navigation"))
+
+
+
+   // SoraEditor & LSP
+
+   implementation(libs.sora.editor)
+
+   implementation(libs.sora.language.treesitter)
+
+   implementation(libs.sora.language.textmate)
+
+   implementation(libs.sora.editor.lsp)
+
+
+
+   implementation(libs.androidx.compose.ui)
+
+   implementation(libs.androidx.hilt.navigation.compose)
+
+   implementation(libs.hilt.android)
+
+   kapt(libs.hilt.compiler)
+
+}
+
+
+
+10.5 Beispiel: Build-Datei für das :app Modul
+
+plugins {
+
+   alias(libs.plugins.android.application)
+
+   alias(libs.plugins.kotlin.android)
+
+   alias(libs.plugins.hilt.android)
+
+   kotlin("kapt")
+
+}
+
+
+
+android {
+
+   namespace = "com.mcs.app"
+
+   compileSdk = 34
+
+   // ... Standard Application Config ...
+
+}
+
+
+
+dependencies {
+
+   implementation(project(":core:ui"))
+
+   implementation(project(":core:di"))
+
+   implementation(project(":feature:home"))
+
+   implementation(project(":feature:onboarding"))
+
+   implementation(project(":feature:editor"))
+
+   implementation(project(":feature:terminal"))
+
+   // ... Weitere Feature-Module ...
+
+   
+
+   implementation(libs.hilt.android)
+
+   kapt(libs.hilt.compiler)
+
+}
