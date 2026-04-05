@@ -12,3 +12,8 @@
 
 # Jetpack Compose
 -keep class androidx.compose.** { *; }
+
+# Keep all native methods for PRoot
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
