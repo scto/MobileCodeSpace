@@ -14,7 +14,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.mobilecodespace.feature.editor.components.EditorToolbar
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.langs.treesitter.TreeSitterLanguage
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 

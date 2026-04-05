@@ -44,7 +44,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                 else -> "text"
             }
             
-            // Hier würde die LSP-Initialisierung für die erkannte Sprache folgen
+            // LSP-Initialisierung für die erkannte Sprache
             startLsp(language)
             
             if (!_openFiles.value.contains(file)) {
