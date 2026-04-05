@@ -21,29 +21,30 @@ class ProjectRepository @Inject constructor() {
             if (!rootDir.canWrite()) return false
 
             // 2. Metadaten-Verzeichnisse erstellen
-            // Struktur: projectRoot/.mcs/.editor
-            val mcsDirPath = "$projectRootPath/${MCSConstants.PROPS_PATH}"
-            val editorDirPath = "$projectRootPath/${MCSConstants.EDITOR_PROPS_PATH}"
+            // Struktur: projectRoot/MCSProjects/.mcs/.editor
+            val internalDataDir = File(projectRootPath, MCSConstants.ROOT_PATH)
+            val mcsDirPath = File(internalDataDir, MCSConstants.PROPS_PATH)
+            val editorDirPath = File(internalDataDir, MCSConstants.EDITOR_PROPS_PATH)
             
-            if (!FileUtils.createDirectory(mcsDirPath)) return false
-            if (!FileUtils.createDirectory(editorDirPath)) return false
+            if (!FileUtils.createDirectory(mcsDirPath.absolutePath)) return false
+            if (!FileUtils.createDirectory(editorDirPath.absolutePath)) return false
 
             // 3. Initial-Dateien erstellen
             // workspace.json im .mcs Ordner
-            val workspaceFile = "$mcsDirPath/${MCSConstants.WORKSPACE_FILE}"
-            if (!FileUtils.createFile(workspaceFile, "{}")) return false
+            val workspaceFile = File(mcsDirPath, MCSConstants.WORKSPACE_FILE)
+            if (!FileUtils.createFile(workspaceFile.absolutePath, "{}")) return false
 
             // open_files.json im .mcs/.editor Ordner
-            val openFilesPath = "$editorDirPath/${MCSConstants.EDITOR_PROPS_FILE}"
-            if (!FileUtils.createFile(openFilesPath, "[]")) return false
+            val openFilesPath = File(editorDirPath, MCSConstants.EDITOR_PROPS_FILE)
+            if (!FileUtils.createFile(openFilesPath.absolutePath, "[]")) return false
 
             // open_files.json.bak im .mcs/.editor Ordner
-            val openFilesBakPath = "$editorDirPath/${MCSConstants.EDITOR_PROPS_FILE_BAK}"
-            if (!FileUtils.createFile(openFilesBakPath, "[]")) return false
+            val openFilesBakPath = File(editorDirPath, MCSConstants.EDITOR_PROPS_FILE_BAK)
+            if (!FileUtils.createFile(openFilesBakPath.absolutePath, "[]")) return false
 
             // 4. Validierung: Setze Ausführungsrechte für das Metadaten-Verzeichnis
             // Dies ist wichtig für PRoot, damit es auf die Metadaten zugreifen kann
-            FileUtils.setExecutable(mcsDirPath)
+            FileUtils.setExecutable(mcsDirPath.absolutePath)
 
             return true
         } catch (e: Exception) {
