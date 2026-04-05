@@ -21,7 +21,7 @@ private val DarkColors = darkColorScheme(
 )
 
 private val LightColors = lightColorScheme(
-    primary = AccentPurple,
+    primary = DarkPurple,
     background = White,
     surface = White,
     onPrimary = White,
@@ -46,7 +46,6 @@ fun MCSTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
         content = content
     )
 }
