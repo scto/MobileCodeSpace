@@ -20,6 +20,7 @@ fun FileTreeView(
     viewModel: FileTreeViewModel = viewModel()
 ) {
     val nodes by viewModel.nodes.collectAsState()
+    val config by viewModel.config.collectAsState()
 
     LaunchedEffect(projectPath) {
         viewModel.loadFiles(projectPath)

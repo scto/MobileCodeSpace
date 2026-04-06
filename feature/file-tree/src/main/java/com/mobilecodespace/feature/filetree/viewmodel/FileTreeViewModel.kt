@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mobilecodespace.feature.filetree.model.FileAttributes
 import com.mobilecodespace.feature.filetree.model.FileNode
 import com.mobilecodespace.feature.filetree.model.FileTreeConfig
+import com.mobilecodespace.feature.filetree.model.ListType
 import com.mobilecodespace.feature.filetree.model.SortOrder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,16 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
     private val _nodes = MutableStateFlow<List<FileNode>>(emptyList())
     val nodes: StateFlow<List<FileNode>> = _nodes
 
-    fun loadFiles(path: String, config: FileTreeConfig = FileTreeConfig()) {
+    private val _config = MutableStateFlow(FileTreeConfig())
+    val config: StateFlow<FileTreeConfig> = _config
+
+    fun updateConfig(newConfig: FileTreeConfig, currentPath: String) {
+        _config.value = newConfig
+        loadFiles(currentPath, newConfig)
+    }
+
+    fun loadFiles(path: String, config: FileTreeConfig = _config.value) {
+        _config.value = config
         viewModelScope.launch {
             _nodes.value = withContext(Dispatchers.IO) {
                 val root = File(path)
@@ -35,6 +45,7 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun buildTree(file: File, config: FileTreeConfig): List<FileNode> {
+        // Hier könnte je nach config.listType eine andere Logik (z.B. Package-Grouping) implementiert werden
         return file.listFiles()
             ?.filter { if (!config.showHidden) !it.isHidden else true }
             ?.map { child ->
