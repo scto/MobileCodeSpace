@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.lsp.LspClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
     private var editor: CodeEditor? = null
     private var currentFile: File? = null
+    private var lspClient: LspClient? = null
 
     fun setEditor(editor: CodeEditor) {
         this.editor = editor
@@ -56,8 +58,11 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
     private fun startLsp(language: String) {
         // LSP-Client Initialisierung
-        // Hier würde die Verbindung zum LSP-Server (z.B. via Socket) aufgebaut werden
-        // und die Capabilities für Autovervollständigung registriert werden.
+        // In einer echten Implementierung würde hier der LSP-Server gestartet oder verbunden werden.
+        if (lspClient == null) {
+            // lspClient = LspClient.create(...)
+        }
+        // lspClient?.didOpen(currentFile, language)
     }
 
     fun saveFile() {
@@ -101,5 +106,11 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
     fun formatCode() {
         // LSP-Integration für Formatierung
+        // lspClient?.format(currentFile)
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        // lspClient?.shutdown()
     }
 }
