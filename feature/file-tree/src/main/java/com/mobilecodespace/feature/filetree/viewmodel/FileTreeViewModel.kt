@@ -26,6 +26,8 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
     private val _config = MutableStateFlow(FileTreeConfig())
     val config: StateFlow<FileTreeConfig> = _config
 
+    private var allNodes: List<FileNode> = emptyList()
+
     fun updateConfig(newConfig: FileTreeConfig, currentPath: String) {
         _config.value = newConfig
         loadFiles(currentPath, newConfig)
@@ -34,18 +36,43 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
     fun loadFiles(path: String, config: FileTreeConfig = _config.value) {
         _config.value = config
         viewModelScope.launch {
-            _nodes.value = withContext(Dispatchers.IO) {
+            val tree = withContext(Dispatchers.IO) {
                 val root = File(path)
                 if (root.exists() && root.isDirectory) {
-                    val tree = when (config.listType) {
+                    when (config.listType) {
                         ListType.FILE_LIST -> buildTree(root, config)
                         ListType.PACKAGE_LIST -> buildPackageTree(root, config)
                         ListType.MODULE_LIST -> buildModuleTree(root, config)
                     }
-                    FileNodeList(tree)
                 } else {
-                    FileNodeList(emptyList())
+                    emptyList()
                 }
+            }
+            allNodes = tree
+            _nodes.value = FileNodeList(tree)
+        }
+    }
+
+    fun filterFiles(query: String) {
+        if (query.isBlank()) {
+            _nodes.value = FileNodeList(allNodes)
+        } else {
+            _nodes.value = FileNodeList(filterTree(allNodes, query))
+        }
+    }
+
+    private fun filterTree(nodes: List<FileNode>, query: String): List<FileNode> {
+        return nodes.mapNotNull { node ->
+            val matches = node.file.name.contains(query, ignoreCase = true)
+            val filteredChildren = filterTree(node.children, query)
+            
+            if (matches || filteredChildren.isNotEmpty()) {
+                node.copy(
+                    children = filteredChildren,
+                    isExpanded = if (query.isNotBlank()) true else node.isExpanded
+                )
+            } else {
+                null
             }
         }
     }
