@@ -25,6 +25,7 @@ fun FileTreeView(
 ) {
     val nodes by viewModel.nodes.collectAsState()
     val config by viewModel.config.collectAsState()
+    var searchQuery by remember { mutableStateOf("") }
 
     LaunchedEffect(projectPath) {
         viewModel.loadFiles(projectPath)
@@ -33,6 +34,20 @@ fun FileTreeView(
     val flattenedNodes = remember(nodes) { flattenTree(nodes.nodes) }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Suchfeld
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = {
+                searchQuery = it
+                viewModel.filterFiles(it)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            placeholder = { Text("Suchen...") },
+            singleLine = true
+        )
+
         // Toolbar für Konfiguration
         Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
             Row(
