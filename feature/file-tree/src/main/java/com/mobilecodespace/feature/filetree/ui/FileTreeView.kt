@@ -4,12 +4,15 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilecodespace.feature.filetree.model.FileNode
+import com.mobilecodespace.feature.filetree.model.FileTreeConfig
+import com.mobilecodespace.feature.filetree.model.SortOrder
 import com.mobilecodespace.feature.filetree.viewmodel.FileTreeViewModel
 import java.io.File
 
@@ -20,6 +23,7 @@ fun FileTreeView(
     viewModel: FileTreeViewModel = viewModel()
 ) {
     val nodes by viewModel.nodes.collectAsState()
+    val config by viewModel.config.collectAsState()
 
     LaunchedEffect(projectPath) {
         viewModel.loadFiles(projectPath)
@@ -27,14 +31,37 @@ fun FileTreeView(
 
     val flattenedNodes = remember(nodes) { flattenTree(nodes.nodes) }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(flattenedNodes) { (node, depth) ->
-            FileNodeItem(
-                node = node,
-                depth = depth,
-                onFileClick = onFileClick,
-                onToggle = { viewModel.toggleExpansion(node) }
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Toolbar für Konfiguration
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Sort: ")
+            SortOrder.values().forEach { order ->
+                TextButton(onClick = { viewModel.updateConfig(config.copy(sortOrder = order), projectPath) }) {
+                    Text(text = order.name.take(1), color = if (config.sortOrder == order) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Checkbox(
+                checked = config.showHidden,
+                onCheckedChange = { viewModel.updateConfig(config.copy(showHidden = it), projectPath) }
             )
+            Text("Hidden")
+        }
+
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            items(flattenedNodes) { (node, depth) ->
+                FileNodeItem(
+                    node = node,
+                    depth = depth,
+                    onFileClick = onFileClick,
+                    onToggle = { viewModel.toggleExpansion(node) }
+                )
+            }
         }
     }
 }
