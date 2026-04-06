@@ -22,9 +22,18 @@ class EditorViewModel @Inject constructor() : ViewModel() {
     private val _isSaved = MutableStateFlow(true)
     val isSaved: StateFlow<Boolean> = _isSaved
 
+    private val _diagnostics = MutableStateFlow<List<String>>(emptyList())
+    val diagnostics: StateFlow<List<String>> = _diagnostics
+
     private var editor: CodeEditor? = null
     private var currentFile: File? = null
     private val lspManager = LspManager()
+
+    init {
+        lspManager.setDiagnosticListener { newDiagnostics ->
+            _diagnostics.value = newDiagnostics
+        }
+    }
 
     fun setEditor(editor: CodeEditor) {
         this.editor = editor
