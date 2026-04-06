@@ -1,16 +1,19 @@
 package com.mobilecodespace.feature.editor
 
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.mobilecodespace.core.ui.components.Sidepanel
 import com.mobilecodespace.feature.editor.components.EditorToolbar
@@ -30,6 +33,7 @@ fun EditorScreen(viewModel: EditorViewModel, filePath: String?) {
     val scope = rememberCoroutineScope()
     var showMenu by remember { mutableStateOf(false) }
     var showToolsMenu by remember { mutableStateOf(false) }
+    val diagnostics by viewModel.diagnostics.collectAsState()
 
     val editor = remember {
         CodeEditor(context).apply {
@@ -130,12 +134,38 @@ fun EditorScreen(viewModel: EditorViewModel, filePath: String?) {
                     onCopy = { viewModel.copy() },
                     onPaste = { viewModel.paste() }
                 )
-                AndroidView(
-                    factory = { editor },
-                    modifier = Modifier.fillMaxSize(),
-                    update = { view ->
+                
+                // Editor Bereich
+                Box(modifier = Modifier.weight(1f)) {
+                    AndroidView(
+                        factory = { editor },
+                        modifier = Modifier.fillMaxSize(),
+                        update = { view ->
+                        }
+                    )
+                }
+
+                // Diagnostics Panel
+                if (diagnostics.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(8.dp)
+                    ) {
+                        Text("Probleme", style = MaterialTheme.typography.titleSmall)
+                        LazyColumn {
+                            items(diagnostics) { diagnostic ->
+                                Text(
+                                    text = diagnostic,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
                     }
-                )
+                }
             }
         }
     }
