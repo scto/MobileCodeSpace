@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.mobilecodespace.core.ui.components.Sidepanel
 import com.mobilecodespace.feature.editor.components.EditorToolbar
+import com.mobilecodespace.feature.filetree.ui.FileTreeView
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.widget.CodeEditor
@@ -72,7 +73,16 @@ fun EditorScreen(viewModel: EditorViewModel, filePath: String?) {
         drawerContent = {
             ModalDrawerSheet {
                 Sidepanel(
-                    mainContent = { /* Hier könnte der FileTree eingebunden werden */ }
+                    mainContent = {
+                        val projectRoot = filePath?.let { File(it).parent } ?: ""
+                        FileTreeView(
+                            projectPath = projectRoot,
+                            onFileClick = { file ->
+                                viewModel.openFile(file)
+                                scope.launch { drawerState.close() }
+                            }
+                        )
+                    }
                 )
             }
         }
