@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilecodespace.feature.filetree.model.FileAttributes
 import com.mobilecodespace.feature.filetree.model.FileNode
+import com.mobilecodespace.feature.filetree.model.FileNodeList
 import com.mobilecodespace.feature.filetree.model.FileTreeConfig
 import com.mobilecodespace.feature.filetree.model.ListType
 import com.mobilecodespace.feature.filetree.model.SortOrder
@@ -19,8 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FileTreeViewModel @Inject constructor() : ViewModel() {
 
-    private val _nodes = MutableStateFlow<List<FileNode>>(emptyList())
-    val nodes: StateFlow<List<FileNode>> = _nodes
+    private val _nodes = MutableStateFlow(FileNodeList(emptyList()))
+    val nodes: StateFlow<FileNodeList> = _nodes
 
     private val _config = MutableStateFlow(FileTreeConfig())
     val config: StateFlow<FileTreeConfig> = _config
@@ -36,16 +37,20 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
             _nodes.value = withContext(Dispatchers.IO) {
                 val root = File(path)
                 if (root.exists() && root.isDirectory) {
-                    buildTree(root, config)
+                    val tree = when (config.listType) {
+                        ListType.FILE_LIST -> buildTree(root, config)
+                        ListType.PACKAGE_LIST -> buildPackageTree(root, config) // TODO: Implementierung
+                        ListType.MODULE_LIST -> buildModuleTree(root, config) // TODO: Implementierung
+                    }
+                    FileNodeList(tree)
                 } else {
-                    emptyList()
+                    FileNodeList(emptyList())
                 }
             }
         }
     }
 
     private fun buildTree(file: File, config: FileTreeConfig): List<FileNode> {
-        // Hier könnte je nach config.listType eine andere Logik (z.B. Package-Grouping) implementiert werden
         return file.listFiles()
             ?.filter { if (!config.showHidden) !it.isHidden else true }
             ?.map { child ->
@@ -62,6 +67,10 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
             }
             ?.sortedWith(getComparator(config.sortOrder)) ?: emptyList()
     }
+
+    // Platzhalter für zukünftige Implementierungen
+    private fun buildPackageTree(file: File, config: FileTreeConfig): List<FileNode> = buildTree(file, config)
+    private fun buildModuleTree(file: File, config: FileTreeConfig): List<FileNode> = buildTree(file, config)
 
     private fun getComparator(sortOrder: SortOrder): Comparator<FileNode> {
         return when (sortOrder) {

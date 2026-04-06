@@ -27,7 +27,7 @@ fun FileTreeView(
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(nodes) { node ->
+        items(nodes.nodes) { node ->
             FileNodeItem(node = node, onFileClick = onFileClick)
         }
     }
