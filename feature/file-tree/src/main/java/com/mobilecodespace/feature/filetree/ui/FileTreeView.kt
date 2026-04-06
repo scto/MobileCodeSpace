@@ -8,22 +8,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilecodespace.feature.filetree.model.FileNode
+import com.mobilecodespace.feature.filetree.viewmodel.FileTreeViewModel
 import java.io.File
 
 @Composable
 fun FileTreeView(
     projectPath: String,
-    onFileClick: (File) -> Unit
+    onFileClick: (File) -> Unit,
+    viewModel: FileTreeViewModel = viewModel()
 ) {
-    // In einer echten Implementierung würde dies über ein ViewModel geladen werden
-    var nodes by remember { mutableStateOf(emptyList<FileNode>()) }
+    val nodes by viewModel.nodes.collectAsState()
 
     LaunchedEffect(projectPath) {
-        val root = File(projectPath)
-        if (root.exists() && root.isDirectory) {
-            nodes = root.listFiles()?.map { FileNode(it) } ?: emptyList()
-        }
+        viewModel.loadFiles(projectPath)
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
