@@ -24,6 +24,10 @@ class ProjectRepository @Inject constructor() {
 
             // 2. Metadaten-Verzeichnisse erstellen
             // Struktur: projectRoot/MCSProjects/.mcs/.editor
+            // MCSConstants.ROOT_PATH ist "MCSProjects"
+            // MCSConstants.PROPS_PATH ist ".mcs"
+            // MCSConstants.EDITOR_PROPS_PATH ist ".mcs/.editor"
+            
             val mcsBaseDir = File(rootDir, MCSConstants.ROOT_PATH)
             val propsDir = File(mcsBaseDir, MCSConstants.PROPS_PATH)
             val editorPropsDir = File(mcsBaseDir, MCSConstants.EDITOR_PROPS_PATH)
