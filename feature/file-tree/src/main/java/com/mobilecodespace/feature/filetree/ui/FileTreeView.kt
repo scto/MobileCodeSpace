@@ -20,41 +20,54 @@ fun FileTreeView(
     viewModel: FileTreeViewModel = viewModel()
 ) {
     val nodes by viewModel.nodes.collectAsState()
-    val config by viewModel.config.collectAsState()
 
     LaunchedEffect(projectPath) {
         viewModel.loadFiles(projectPath)
     }
 
+    val flattenedNodes = remember(nodes) { flattenTree(nodes.nodes) }
+
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(nodes.nodes) { node ->
-            FileNodeItem(node = node, onFileClick = onFileClick)
+        items(flattenedNodes) { (node, depth) ->
+            FileNodeItem(
+                node = node,
+                depth = depth,
+                onFileClick = onFileClick,
+                onToggle = { viewModel.toggleExpansion(node) }
+            )
         }
     }
 }
 
-@Composable
-fun FileNodeItem(node: FileNode, onFileClick: (File) -> Unit, depth: Int = 0) {
-    var expanded by remember { mutableStateOf(node.isExpanded) }
-
-    Column {
-        Text(
-            text = ("  ".repeat(depth)) + (if (node.file.isDirectory) "📁 " else "📄 ") + node.file.name,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .clickable {
-                    if (node.file.isDirectory) {
-                        expanded = !expanded
-                    } else {
-                        onFileClick(node.file)
-                    }
-                }
-        )
-        if (expanded && node.file.isDirectory) {
-            node.children.forEach { child ->
-                FileNodeItem(node = child, onFileClick = onFileClick, depth = depth + 1)
-            }
+private fun flattenTree(nodes: List<FileNode>, depth: Int = 0): List<Pair<FileNode, Int>> {
+    val result = mutableListOf<Pair<FileNode, Int>>()
+    for (node in nodes) {
+        result.add(node to depth)
+        if (node.isExpanded && node.children.isNotEmpty()) {
+            result.addAll(flattenTree(node.children, depth + 1))
         }
     }
+    return result
+}
+
+@Composable
+fun FileNodeItem(
+    node: FileNode,
+    depth: Int,
+    onFileClick: (File) -> Unit,
+    onToggle: () -> Unit
+) {
+    Text(
+        text = ("  ".repeat(depth)) + (if (node.file.isDirectory) (if (node.isExpanded) "📂 " else "📁 ") else "📄 ") + node.file.name,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                if (node.file.isDirectory) {
+                    onToggle()
+                } else {
+                    onFileClick(node.file)
+                }
+            }
+    )
 }

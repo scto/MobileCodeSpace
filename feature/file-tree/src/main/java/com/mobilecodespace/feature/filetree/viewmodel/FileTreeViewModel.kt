@@ -39,13 +39,29 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
                 if (root.exists() && root.isDirectory) {
                     val tree = when (config.listType) {
                         ListType.FILE_LIST -> buildTree(root, config)
-                        ListType.PACKAGE_LIST -> buildPackageTree(root, config) // TODO: Implementierung
-                        ListType.MODULE_LIST -> buildModuleTree(root, config) // TODO: Implementierung
+                        ListType.PACKAGE_LIST -> buildPackageTree(root, config)
+                        ListType.MODULE_LIST -> buildModuleTree(root, config)
                     }
                     FileNodeList(tree)
                 } else {
                     FileNodeList(emptyList())
                 }
+            }
+        }
+    }
+
+    fun toggleExpansion(node: FileNode) {
+        _nodes.value = FileNodeList(toggleNodeExpansion(_nodes.value.nodes, node))
+    }
+
+    private fun toggleNodeExpansion(nodes: List<FileNode>, target: FileNode): List<FileNode> {
+        return nodes.map { node ->
+            if (node.file == target.file) {
+                node.copy(isExpanded = !node.isExpanded)
+            } else if (node.children.isNotEmpty()) {
+                node.copy(children = toggleNodeExpansion(node.children, target))
+            } else {
+                node
             }
         }
     }
@@ -68,7 +84,6 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
             ?.sortedWith(getComparator(config.sortOrder)) ?: emptyList()
     }
 
-    // Platzhalter für zukünftige Implementierungen
     private fun buildPackageTree(file: File, config: FileTreeConfig): List<FileNode> = buildTree(file, config)
     private fun buildModuleTree(file: File, config: FileTreeConfig): List<FileNode> = buildTree(file, config)
 
