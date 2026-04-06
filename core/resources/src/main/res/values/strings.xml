@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MobileCodeSpace</string>
+    <string name="save">Speichern</string>
+    <string name="save_all">Alles speichern</string>
+    <string name="open">Öffnen</string>
+    <string name="close">Schließen</string>
+    <string name="close_all">Alle schließen</string>
+    <string name="format">Formatieren</string>
+    <string name="search_in_file">In Datei suchen</string>
+    <string name="search_in_project">Im Projekt suchen</string>
+</resources>
