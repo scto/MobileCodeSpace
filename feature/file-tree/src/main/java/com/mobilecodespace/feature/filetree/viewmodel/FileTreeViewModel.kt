@@ -2,6 +2,7 @@ package com.mobilecodespace.feature.filetree.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.feature.filetree.model.FileAttributes
 import com.mobilecodespace.feature.filetree.model.FileNode
 import com.mobilecodespace.feature.filetree.model.FileTreeConfig
 import com.mobilecodespace.feature.filetree.model.SortOrder
@@ -25,12 +26,30 @@ class FileTreeViewModel @Inject constructor() : ViewModel() {
             _nodes.value = withContext(Dispatchers.IO) {
                 val root = File(path)
                 if (root.exists() && root.isDirectory) {
-                    root.listFiles()?.map { FileNode(it) }?.sortedWith(getComparator(config.sortOrder)) ?: emptyList()
+                    buildTree(root, config)
                 } else {
                     emptyList()
                 }
             }
         }
+    }
+
+    private fun buildTree(file: File, config: FileTreeConfig): List<FileNode> {
+        return file.listFiles()
+            ?.filter { if (!config.showHidden) !it.isHidden else true }
+            ?.map { child ->
+                val children = if (child.isDirectory) buildTree(child, config) else emptyList()
+                FileNode(
+                    file = child,
+                    children = children,
+                    attributes = FileAttributes(
+                        isHidden = child.isHidden,
+                        lastModified = child.lastModified(),
+                        size = child.length()
+                    )
+                )
+            }
+            ?.sortedWith(getComparator(config.sortOrder)) ?: emptyList()
     }
 
     private fun getComparator(sortOrder: SortOrder): Comparator<FileNode> {
