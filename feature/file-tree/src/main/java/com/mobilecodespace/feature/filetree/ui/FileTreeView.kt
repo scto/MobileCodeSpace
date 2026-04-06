@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilecodespace.feature.filetree.model.FileNode
 import com.mobilecodespace.feature.filetree.model.FileTreeConfig
+import com.mobilecodespace.feature.filetree.model.ListType
 import com.mobilecodespace.feature.filetree.model.SortOrder
 import com.mobilecodespace.feature.filetree.viewmodel.FileTreeViewModel
 import java.io.File
@@ -33,24 +34,36 @@ fun FileTreeView(
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Toolbar für Konfiguration
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Sort: ")
-            SortOrder.values().forEach { order ->
-                TextButton(onClick = { viewModel.updateConfig(config.copy(sortOrder = order), projectPath) }) {
-                    Text(text = order.name.take(1), color = if (config.sortOrder == order) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+        Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Sort: ")
+                SortOrder.entries.forEach { order ->
+                    TextButton(onClick = { viewModel.updateConfig(config.copy(sortOrder = order), projectPath) }) {
+                        Text(text = order.name.take(1), color = if (config.sortOrder == order) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                    }
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Checkbox(
+                    checked = config.showHidden,
+                    onCheckedChange = { viewModel.updateConfig(config.copy(showHidden = it), projectPath) }
+                )
+                Text("Hidden")
+            }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("View: ")
+                ListType.entries.forEach { type ->
+                    TextButton(onClick = { viewModel.updateConfig(config.copy(listType = type), projectPath) }) {
+                        Text(text = type.name.take(3), color = if (config.listType == type) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                    }
                 }
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Checkbox(
-                checked = config.showHidden,
-                onCheckedChange = { viewModel.updateConfig(config.copy(showHidden = it), projectPath) }
-            )
-            Text("Hidden")
         }
 
         LazyColumn(modifier = Modifier.weight(1f)) {
