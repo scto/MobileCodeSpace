@@ -2,9 +2,9 @@ package com.mobilecodespace.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.feature.editor.lsp.LspManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rosemoe.sora.widget.CodeEditor
-import io.github.rosemoe.sora.lsp.LspClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
 
     private var editor: CodeEditor? = null
     private var currentFile: File? = null
-    private var lspClient: LspClient? = null
+    private val lspManager = LspManager()
 
     fun setEditor(editor: CodeEditor) {
         this.editor = editor
@@ -47,22 +47,13 @@ class EditorViewModel @Inject constructor() : ViewModel() {
             }
             
             // LSP-Initialisierung für die erkannte Sprache
-            startLsp(language)
+            lspManager.start(language, file)
             
             if (!_openFiles.value.contains(file)) {
                 _openFiles.value = _openFiles.value + file
             }
             _isSaved.value = true
         }
-    }
-
-    private fun startLsp(language: String) {
-        // LSP-Client Initialisierung
-        // In einer echten Implementierung würde hier der LSP-Server gestartet oder verbunden werden.
-        if (lspClient == null) {
-            // lspClient = LspClient.create(...)
-        }
-        // lspClient?.didOpen(currentFile, language)
     }
 
     fun saveFile() {
@@ -105,12 +96,11 @@ class EditorViewModel @Inject constructor() : ViewModel() {
     }
 
     fun formatCode() {
-        // LSP-Integration für Formatierung
-        // lspClient?.format(currentFile)
+        currentFile?.let { lspManager.format(it) }
     }
     
     override fun onCleared() {
         super.onCleared()
-        // lspClient?.shutdown()
+        lspManager.shutdown()
     }
 }
