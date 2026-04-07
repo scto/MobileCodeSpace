@@ -27,7 +27,8 @@ SCHRITT 6: Editor Assets & Tree-Sitter Deployment
 * Diese Dateien dienen als Basis für das Syntax-Highlighting und die LSP-Funktionalität.
 TEIL 3: ONBOARDING & SETUP
 SCHRITT 7: Cloud-Download-System (:feature:onboarding)
-Implementiere architekturabhängige Downloads im OnboardingViewModel:
+Entferne architekturabhängige Downloads im OnboardingViewModel und verwende dafür PRootManager aus :core:data:
+Implementiere architekturabhängige Downloads im PRöotManager und refaktoriere die PRootServices
 * URLs:
    * cmdline: https://github.com/scto/MobileCodeSpace-Packages/releases/download/cmdline/cmdline.zip
    * scripts: https://github.com/scto/MobileCodeSpace-Packages/releases/download/scripts/scripts.zip
