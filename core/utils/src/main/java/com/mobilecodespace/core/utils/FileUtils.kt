@@ -58,4 +58,54 @@ object FileUtils {
     /** Findet den absoluten Pfad einer Datei innerhalb eines Root-Verzeichnisses */
     fun getFilePath(rootDir: String, fileName: String, withExtension: Boolean): String? {
         val directory = File(rootDir)
-        if (!directory.exists
+        if (!directory.exists() || !directory.isDirectory) return null
+        
+        val targetName = if (fileName.startsWith("/")) fileName.substring(1) else fileName
+        val files = directory.listFiles() ?: return null
+        
+        for (file in files) {
+            var path = file.absolutePath
+            if (!withExtension && file.isFile) {
+                path = path.substringBeforeLast('.')
+            }
+            
+            if (path.endsWith("/$targetName") && file.isFile) {
+                return file.absolutePath
+            }
+            
+            if (file.isDirectory) {
+                val found = getFilePath(file.absolutePath, fileName, withExtension)
+                if (found != null) return found
+            }
+        }
+        return null
+    }
+
+    fun getExtension(path: String): String = path.substringAfterLast('.', "")
+
+    fun setExtension(path: String, newExtension: String): String {
+        val base = path.substringBeforeLast('.')
+        return "$base.$newExtension"
+    }
+
+    fun getNameFromAbsolutePath(path: String): String = path.substringAfterLast('/')
+
+    fun getPrefixPath(path: String): String = path.substringBeforeLast('/')
+
+    fun getParentNameFromAbsolutePath(path: String): String = getNameFromAbsolutePath(getPrefixPath(path))
+
+    // --- DATEI-OPERATIONEN ---
+
+    /** Erstellt eine Datei. Falls isHidden true ist, wird ein Punkt vorangestellt. */
+    fun createFile(path: String, isHidden: Boolean = false): Boolean {
+        val file = File(path)
+        if (file.exists()) return true
+        return try {
+            file.parentFile?.mkdirs()
+            file.createNewFile()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
+    }
+}
