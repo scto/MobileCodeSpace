@@ -1,0 +1,56 @@
+/* MobileCodeStudio - Your IDE in your pocket !
+ *
+ * MobileCodeStudio is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MobileCodeStudio is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MobileCodeStudio.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.github.megatronking.stringfog:gradle-plugin:5.2.0"
+    }
+}
+
+println "Prepare the tools, please wait..."
+
+allprojects { project ->
+    if (!project.hasProperty("mcs.security")) {
+        return
+    }
+
+    project.afterEvaluate {
+        if (!project.plugins.hasPlugin("com.android.application")) {
+            return
+        }
+        
+        println "Application module found."
+        project.apply plugin: "stringfog"
+        project.stringfog {
+            enable true
+            implementation "com.github.megatronking.stringfog.xor.StringFogImpl"
+        }
+        println "\"Stringfog\" plugin has been added to the app module."
+        project.android.buildTypes.release {
+            minifyEnabled true
+            shrinkResources true
+            def secRules = new File(System.getenv("SCRIPTS") + "/security/mcs-security.pro")
+            if (secRules.exists()) {
+                proguardFiles secRules
+            }
+        }
+        println "Preparation completed."
+    }
+}

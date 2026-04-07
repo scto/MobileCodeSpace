@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+LOG=$(mktemp)
+
+gradle "$@" 2>&1 | tee "$LOG"
+RET=${PIPESTATUS[0]}
+
+if [ $RET -ne 0 ]; then
+  echo "[MobileCodeStudio-AI] Build failed, running repair engine..."
+  mcs-ai
+fi
+
+exit $RET

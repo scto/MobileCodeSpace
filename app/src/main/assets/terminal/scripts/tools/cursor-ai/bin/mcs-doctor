@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "[MobileCodeStudio Doctor] Running full project scan + repair..."
+"$HOME/.mcs/tools/cursor-ai/bin/cursor-ai.sh"

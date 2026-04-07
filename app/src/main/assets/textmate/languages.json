@@ -1,0 +1,275 @@
+{
+  "languages": [
+  {
+      "name": "asm",
+      "scopeName": "source.asm",
+      "grammar": "textmate/asm/syntaxes/asm.tmLanguage.json",
+      "languageConfiguration": "textmate/asm/language-configuration.json",
+      "fileExtensions": ["asm"]
+  },
+  {
+    "name": "bat",
+    "scopeName": "source.batchfile",
+    "grammar": "textmate/bat/syntaxes/batchfile.tmLanguage.json",
+    "languageConfiguration": "textmate/bat/language-configuration.json",
+    "fileExtensions": [
+      "bat", "cmd"
+    ]
+  },
+  {
+    "name": "c",
+    "scopeName": "source.c",
+    "grammar": "textmate/cpp/syntaxes/c.tmLanguage.json",
+    "languageConfiguration": "textmate/cpp/language-configuration.json",
+    "fileExtensions": [
+      "c"
+    ]
+  },
+  {
+    "name": "cpp",
+    "scopeName": "source.cpp",
+    "grammar": "textmate/cpp/syntaxes/cpp.tmLanguage.json",
+    "languageConfiguration": "textmate/cpp/language-configuration.json",
+    "fileExtensions": [
+      "cpp", "h", "hh", "hpp"
+    ]
+  },
+  {
+    "name": "csharp",
+    "scopeName": "source.cs",
+    "grammar": "textmate/csharp/syntaxes/csharp.tmLanguage.json",
+    "languageConfiguration": "textmate/csharp/language-configuration.json",
+    "fileExtensions": [
+      "cs"
+    ]
+  },
+  {
+    "name": "css",
+    "scopeName": "source.css",
+    "grammar": "textmate/css/syntaxes/css.tmLanguage.json",
+    "languageConfiguration": "textmate/css/language-configuration.json",
+    "fileExtensions": [
+      "css"
+    ]
+  },
+  {
+    "name": "go",
+    "scopeName": "source.go",
+    "grammar": "textmate/go/syntaxes/go.tmLanguage.json",
+    "languageConfiguration": "textmate/go/language-configuration.json",
+    "fileExtensions": [
+      "go"
+    ]
+  },
+  {
+    "name": "groovy",
+    "scopeName": "source.groovy",
+    "grammar": "textmate/groovy/syntaxes/groovy.tmLanguage.json",
+    "languageConfiguration": "textmate/groovy/language-configuration.json",
+    "fileExtensions": [
+      "groovy", "gradle", "gvy", "gy", "gsh"
+    ]
+  },
+  {
+    "name": "html",
+    "scopeName": "text.html.basic",
+    "grammar": "textmate/html/syntaxes/html.tmLanguage.json",
+    "languageConfiguration": "textmate/html/language-configuration.json",
+    "embeddedLanguages": {
+      "source.js": "javascript"
+    },
+    "fileExtensions": [
+      "htm", "html", "xhtml", "xht"
+    ]
+  },
+    {
+      "name": "htmx",
+      "scopeName": "text.html.htmx",
+      "grammar": "textmate/htmx/syntaxes/htmx.tmLanguage.json",
+      "languageConfiguration": "textmate/htmx/language-configuration.json",
+      "fileExtensions": ["htmx"]
+    },
+    {
+      "name": "ignore",
+      "scopeName": "source.ignore",
+      "grammar": "textmate/ignore/syntaxes/ignore.tmLanguage.json",
+      "languageConfiguration": "textmate/ignore/ignore.language-configuration.json",
+      "fileExtensions": ["gitignore", "ignore"]
+    },
+  {
+    "name": "ini",
+    "scopeName": "source.ini",
+    "grammar": "textmate/ini/syntaxes/ini.tmLanguage.json",
+    "languageConfiguration": "textmate/ini/ini.language-configuration.json",
+    "fileExtensions": [
+      "ini", "properties", "prop", "gitattributes",
+      "gitconfig", "gitmodules", "pro"
+    ]
+  },
+  {
+    "name": "java",
+    "scopeName": "source.java",
+    "grammar": "textmate/java/syntaxes/java.tmLanguage.json",
+    "languageConfiguration": "textmate/java/language-configuration.json",
+    "fileExtensions": [
+      "java", "jav", "bsh"
+    ]
+  },
+  {
+    "name": "javascript",
+    "scopeName": "source.js",
+    "grammar": "textmate/javascript/syntaxes/JavaScript.tmLanguage.json",
+    "languageConfiguration": "textmate/javascript/language-configuration.json",
+    "fileExtensions": [
+      "js"
+    ]
+  },
+  {
+    "name": "json",
+    "scopeName": "source.json",
+    "grammar": "textmate/json/syntaxes/JSON.tmLanguage.json",
+    "languageConfiguration": "textmate/json/language-configuration.json",
+    "fileExtensions": [
+      "json", "webmanifest"
+    ]
+  },
+  {
+    "name": "kotlin",
+    "scopeName": "source.kotlin",
+    "grammar": "textmate/kotlin/syntaxes/Kotlin.tmLanguage",
+    "languageConfiguration": "textmate/kotlin/language-configuration.json",
+    "fileExtensions": [
+      "kt", "kts"
+    ]
+  },
+  {
+    "name": "log",
+    "scopeName": "text.log",
+    "grammar": "textmate/log/syntaxes/log.tmLanguage.json",
+    "fileExtensions": [
+      "log"
+    ]
+  },
+  {
+    "name": "lua",
+    "scopeName": "source.lua",
+    "grammar": "textmate/lua/syntaxes/lua.tmLanguage.json",
+    "languageConfiguration": "textmate/lua/language-configuration.json",
+    "fileExtensions": [
+      "lua"
+    ]
+  },
+  {
+    "name": "markdown",
+    "scopeName": "text.html.markdown",
+    "grammar": "textmate/markdown/syntaxes/markdown.tmLanguage.json",
+    "languageConfiguration": "textmate/markdown/language-configuration.json",
+    "embeddedLanguages": {
+      "meta.embedded.block.html": "html",
+      "source.js": "javascript",
+      "meta.embedded.block.java": "java",
+      "meta.embedded.block.xml": "xml",
+      "meta.embedded.block.python": "python"
+    },
+    "fileExtensions": [
+      "md"
+    ]
+  },
+  {
+    "name": "php",
+    "scopeName": "source.php",
+    "grammar": "textmate/php/syntaxes/php.tmLanguage.json",
+    "languageConfiguration": "textmate/php/language-configuration.json",
+    "fileExtensions": [
+      "php", "php4", "php5", "phtml", "ctp"
+    ]
+  },
+    {
+      "name": "powershell",
+      "scopeName": "source.powershell",
+      "grammar": "textmate/powershell/syntaxes/powershell.tmLanguage.json",
+      "languageConfiguration": "textmate/powershell/language-configuration.json",
+      "fileExtensions": ["ps1", "psm1"]
+    },
+    {
+      "name": "properties",
+      "scopeName": "source.properties",
+      "grammar": "textmate/properties/syntaxes/properties.tmLanguage.json",
+      "languageConfiguration": "textmate/properties/properties.language-configuration.json",
+      "fileExtensions": ["properties", "prop"]
+    },
+  {
+    "name": "python",
+    "scopeName": "source.python",
+    "grammar": "textmate/python/syntaxes/python.tmLanguage.json",
+    "languageConfiguration": "textmate/python/language-configuration.json",
+    "fileExtensions": [
+      "py"
+    ]
+  },
+  {
+    "name": "shellscript",
+    "scopeName": "source.shell",
+    "grammar": "textmate/shellscript/syntaxes/shell-unix-bash.tmLanguage.json",
+    "languageConfiguration": "textmate/shellcript/language-configuration.json",
+    "fileExtensions": [
+      "sh", "gradlew"
+    ]
+  },
+  {
+    "name": "typescript",
+    "scopeName": "source.ts",
+    "grammar": "textmate/typescript/syntaxes/TypeScript.tmLanguage.json",
+    "languageConfiguration": "textmate/typescript/language-configuration.json",
+    "fileExtensions": [
+      "ts", "cts", "mts"
+    ]
+  },
+    {
+      "name": "sql",
+      "scopeName": "source.sql",
+      "grammar": "textmate/sql/syntaxes/sql.tmLanguage.json",
+      "languageConfiguration": "textmate/sql/language-configuration.json",
+      "fileExtensions": ["sql"]
+    },
+    {
+      "name": "swift",
+      "scopeName": "source.swift",
+      "grammar": "textmate/swift/syntaxes/swift.tmLanguage.json",
+      "languageConfiguration": "textmate/swift/language-configuration.json",
+      "fileExtensions": ["swift"]
+    },
+    {
+      "name": "text",
+      "scopeName": "text.plain",
+      "grammar": "textmate/text/syntaxes/text.tmLanguage.json",
+      "languageConfiguration": "textmate/text/language-configuration.json",
+      "fileExtensions": ["txt", "text"]
+    },
+    {
+      "name": "toml",
+      "scopeName": "source.toml",
+      "grammar": "textmate/toml/toml.tmLanguage.json",
+      "languageConfiguration": "textmate/toml/toml.language-configuration.json",
+      "fileExtensions": ["toml"]
+    },
+  {
+    "name": "xml",
+    "scopeName": "text.xml",
+    "grammar": "textmate/xml/syntaxes/xml.tmLanguage.json",
+    "languageConfiguration": "textmate/xml/language-configuration.json",
+    "fileExtensions": [
+      "xml", "tmTheme", "pom"
+    ]
+  },
+  {
+    "name": "yaml",
+    "scopeName": "source.yaml",
+    "grammar": "textmate/yaml/syntaxes/yaml.tmLanguage.json",
+    "languageConfiguration": "textmate/yaml/language-configuration.json",
+    "fileExtensions": [
+      "yml", "eyaml", "eyml", "yaml", "cff"
+    ]
+  }
+  ]
+}

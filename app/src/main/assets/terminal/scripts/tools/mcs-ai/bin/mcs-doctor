@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+ROOT="$HOME/.mcs/tools/mcs-ai"
+
+echo "🩺 MobileCodeStudio Doctor Running..."
+
+bash "$ROOT/repair/dependency-conflict-fix.sh"
+bash "$ROOT/repair/manifest-auto-generate.sh"
+bash "$ROOT/repair/agp-align.sh"
+bash "$ROOT/doctor/sdk-suggest.sh"
+
+echo "✅ Project healed"

@@ -1,0 +1,291 @@
+/* MobileCodeStudio - Your IDE in your pocket !
+*
+* MobileCodeStudio is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* MobileCodeStudio is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with MobileCodeStudio.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+import java.security.MessageDigest
+
+def sha1Hex(File file) {
+    MessageDigest md = MessageDigest.getInstance("SHA-1")
+    file.withInputStream { is ->
+        byte[] buffer = new byte[8192]
+        int read
+        while ((read = is.read(buffer)) != -1) {
+            md.update(buffer, 0, read)
+        }
+    }
+    return md.digest().collect { String.format("%02x", it) }.join()
+}
+
+
+def downloadTo(File target, String urlStr) {
+    target.parentFile.mkdirs()
+    
+    File tmp = new File(target.parentFile, target.name + ".part")
+
+    try {
+        new URL(urlStr).withInputStream { input ->
+            tmp.withOutputStream { output ->
+                output << input
+            }
+        }
+
+        if (tmp.exists() && tmp.length() > 0) {
+            tmp.renameTo(target)
+            println "Downloading: ${urlStr}"
+        }
+    } catch(Exception ignored) {
+        // ignore
+    }
+}
+
+
+def manualDownloadArtifact(String root, String depString) {
+
+    def parts = depString.split(":")
+    if (parts.length < 3) return null
+
+    def group = parts[0]
+    def artifact = parts[1]
+    def version = parts[2]
+
+    def relPath = "${group.replace('.', '/')}/${artifact}/${version}"
+    def fileBase = "${artifact}-${version}"
+
+    def candidates = [
+        "https://dl.google.com/dl/android/maven2/${relPath}/${fileBase}.aar",
+        "https://dl.google.com/dl/android/maven2/${relPath}/${fileBase}.jar",
+
+        "https://repo.maven.apache.org/maven2/${relPath}/${fileBase}.aar",
+        "https://repo.maven.apache.org/maven2/${relPath}/${fileBase}.jar",
+        
+        "https://jitpack.io/${relPath}/${fileBase}.aar",
+        "https://jitpack.io/${relPath}/${fileBase}.jar",
+
+        "https://s01.oss.sonatype.org/content/repositories/snapshots/${relPath}/${fileBase}.aar",
+        "https://s01.oss.sonatype.org/content/repositories/snapshots/${fileBase}.jar",
+        "https://s01.oss.sonatype.org/content/groups/public/${relPath}/${fileBase}.aar",
+        "https://s01.oss.sonatype.org/content/groups/public/${relPath}/${fileBase}.jar",
+
+        "https://jcenter.bintray.com/${relPath}/${fileBase}.aar",
+        "https://jcenter.bintray.com/${relPath}/${fileBase}.jar"
+    ]
+
+    File temp = File.createTempFile("artifact", "tmp")
+
+    for (url in candidates) {
+        try {
+            downloadTo(temp, url)
+            if (temp.length() == 0) continue
+            def sha = sha1Hex(temp)
+            def finalDir = new File("${root}/${group}/${artifact}/${version}/${sha}")
+            finalDir.mkdirs()
+            def outFile = new File(finalDir, url.substring(url.lastIndexOf('/') + 1))
+            temp.renameTo(outFile)
+            return outFile.absolutePath
+        } catch (ignored) {
+        }
+    }
+
+    return null
+}
+
+
+def findArtifactFile = { root, depString ->
+
+    def parts = depString.split(":")
+    if (parts.length < 3) return null
+
+    def group = parts[0]
+    def artifact = parts[1]
+    def version = parts[2]
+
+    def baseDir = new File(root, "${group}/${artifact}/${version}")
+
+    File found = null
+
+    if (baseDir.exists()) {
+        baseDir.listFiles()?.each { hashDir ->
+            if (!hashDir.isDirectory()) return
+            hashDir.listFiles()?.each { f ->
+                if (f.name.endsWith(".jar") || f.name.endsWith(".aar")) {
+                    found = f
+                }
+            }
+        }
+    }
+    
+    if (found != null) return found.absolutePath
+
+    return manualDownloadArtifact(root, depString)
+}
+
+
+def computeOutDir(String artifactPath) {
+    def parent = "/data/data/jkas.MobileCodeStudio/files/home/.MobileCodeStudio/caches/libs"
+
+    File f = new File(artifactPath)
+
+    def versionDir = f.parentFile.parentFile
+    def artifactDir = versionDir.parentFile
+
+    def version = versionDir.name
+    def artifact = artifactDir.name
+
+    def groupParts = []
+    def p = artifactDir.parentFile
+    while (p != null && p.name != "files-2.1") {
+        groupParts << p.name
+        p = p.parentFile
+    }
+    def group = groupParts.reverse().join("/")
+
+    return new File("${parent}/${group}/${artifact}/${version}/data")
+}
+
+
+boolean needExtractAar(String aarPath) {
+    if (!aarPath) return false
+    File aarFile = new File(aarPath)
+    if (!aarFile.exists()) return false
+
+    File outDir = computeOutDir(aarPath)
+    return !(outDir.exists() && outDir.listFiles()?.length > 0)
+}
+
+
+void extractAar(String aarPath) {
+    File inFile = new File(aarPath)
+    File outDir = computeOutDir(aarPath)
+    outDir.mkdirs()
+
+    if (aarPath.endsWith(".aar")) {
+        copy {
+            from zipTree(inFile)
+            into outDir
+        }
+    } else if (aarPath.endsWith(".jar")) {
+        copy {
+            from inFile
+            into outDir
+        }
+    }
+} 
+
+
+void extractAarIfNeeded(String aarPath) {
+    if (needExtractAar(aarPath)) {
+        extractAar(aarPath)
+    }
+}
+
+gradle.projectsEvaluated {
+    def currentProject = System.getenv("pjct")
+    def dir = new File("${currentProject}/.MobileCodeStudio/.tmp")
+    if (!dir.exists()) dir.mkdirs()
+
+    def xmlFile = new File(dir, "init-data.xml")
+    xmlFile.text = ""
+    xmlFile << "<!--\n"
+    xmlFile << "    Generated by MobileCodeStudio\n\n"
+    xmlFile << "    This file was generated by a Gradle script dedicated to MobileCodeStudio.\n"
+    xmlFile << "    It is used to temporarily store important data such as tasks and dependencies between modules.\n"
+    xmlFile << "    This file will be temporarily created and will be immediately deleted once its purpose is completed.\n"
+    xmlFile << "    If you see this file, it is still in use.\n\n"
+    xmlFile << "    PLEASE, DO NOT APPLY ANY CHANGES\n"
+    xmlFile << "-->\n"
+    xmlFile << "<root projectName=\"${rootProject.name}\">\n"
+
+    rootProject.allprojects.each { p ->
+        def modulePath = (p.path == ":") ? "root" : p.path
+        def viewBindingEnabled = false
+        def moduleType = "other"
+        if (p.plugins.hasPlugin("com.android.application")) {
+            moduleType = "application"
+        } else if (p.plugins.hasPlugin("com.android.library")) {
+            moduleType = "library"
+        } else if (p.plugins.hasPlugin("java-gradle-plugin") ||
+                   p.plugins.hasPlugin("groovy-gradle-plugin") ||
+                   p.plugins.hasPlugin("kotlin-dsl")) {
+            moduleType = "gradle-plugin"
+        }
+        
+        if (moduleType == "application" || moduleType == "gradle-plugin") {
+            println "config ${modulePath} (type = ${moduleType})"
+        } else {
+            println "config ${modulePath}"
+        }
+
+        xmlFile << "  <module path=\"${modulePath}\" type=\"${moduleType}\""
+        
+        def androidExt = p.extensions.findByName("android")
+        if (androidExt != null) {
+
+            def compileSdk =
+                    androidExt.hasProperty("compileSdkVersion") ? androidExt.compileSdkVersion :
+                    androidExt.hasProperty("compileSdk") ? androidExt.compileSdk : ""
+
+            def buildTools =
+                    androidExt.hasProperty("buildToolsVersion") ? androidExt.buildToolsVersion : ""
+
+            def namespace =
+                    androidExt.hasProperty("namespace") ? androidExt.namespace : ""
+
+            xmlFile << " compileSdk=\"${compileSdk}\""
+            xmlFile << " buildTools=\"${buildTools}\""
+            xmlFile << " namespace=\"${namespace}\""
+        }
+        
+        if (androidExt.hasProperty("viewBinding")) {
+            viewBindingEnabled = androidExt.viewBinding.hasProperty("enabled") ? androidExt.viewBinding.enabled : false
+        }
+        xmlFile << " viewBinding=\"${viewBindingEnabled}\""
+        xmlFile << ">\n"
+
+        xmlFile << "    <deps>\n"
+        def depsSet = new LinkedHashSet()
+        p.configurations.each { cfg ->
+            cfg.allDependencies.each { dep ->
+                def d = dep.toString().trim()
+                if (d) depsSet << d
+            }
+        } 
+        
+        boolean needed = false
+        depsSet.each { d ->
+            if (d.startsWith("project ':")) xmlFile << "      <project name=\"${d}\" />\n"
+            else {
+                def gradleCacheRoot = "/data/data/jkas.MobileCodeStudio/files/home/.gradle/caches/modules-2/files-2.1"
+                def jarPath = findArtifactFile(gradleCacheRoot, d) ?: ""
+                xmlFile << "      <dep name=\"${d}\" path=\"${jarPath}\" />\n"
+                needed = (!needed && jarPath.endsWith(".aar"))
+                extractAarIfNeeded(jarPath)
+            }
+        }
+        //if(needed) println "-"
+        
+        xmlFile << "    </deps>\n"
+
+        xmlFile << "    <tasks>\n"
+        p.tasks.each { t ->
+            def desc = t.description ?: ". . ."
+            xmlFile << "      <item task=\"${t.path}\" desc=\"${desc}\" />\n"
+        }
+ 
+        xmlFile << "    </tasks>\n"
+
+        xmlFile << "  </module>\n"
+    }
+    xmlFile << "</root>\n"
+}
