@@ -43,6 +43,10 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         this.editor = editor
     }
 
+    fun setDirty(isDirty: Boolean) {
+        _uiState.value = _uiState.value.copy(isDirty = isDirty)
+    }
+
     fun openFile(file: File) {
         viewModelScope.launch {
             val content = withContext(Dispatchers.IO) {
