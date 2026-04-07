@@ -3,9 +3,9 @@ package com.mobilecodespace.feature.onboarding
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mcs.core.utils.ArchiveUtils
-import com.mcs.core.utils.Environment
-import com.mobilecodespace.core.data.proot.PRootManager
+import com.mobilecodespace.core.utils.ArchiveUtils
+import com.mobilecodespace.core.utils.Environment
+import com.mobilecodespace.core.utils.FileUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,40 +23,34 @@ class OnboardingViewModel @Inject constructor(
     private val application: Application
 ) : ViewModel() {
 
-    private val prootManager = PRootManager(application)
     private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.Permissions)
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
+    // Basis-URL für Downloads
+    private val baseUrl = "https://github.com/scto/MobileCodeSpace-Packages/releases/download"
+
     fun requestPermissions() {
         _uiState.value = OnboardingUiState.Downloading
+        startDownload()
     }
 
-    fun startDownload() {
+    private fun startDownload() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    val is64 = Environment.archApp == "64"
-                    val baseUrl = "https://github.com/scto/MobileCodeSpace-Packages/releases/download"
+                    val is64 = FileUtils.isAarch64()
 
-                    // 1. Installation von PRoot (lokal aus Assets)
-                    _uiState.value = OnboardingUiState.Progress("Installiere PRoot...", 10)
-                    prootManager.installProotBinary()
-                    
-                    // 2. Setup des Rootfs (lokal)
-                    _uiState.value = OnboardingUiState.Progress("Initialisiere Dateisystem...", 20)
-                    prootManager.setupRootfs()
-                    
-                    // 3. Download & Extraktion von Cmdline Tools
-                    downloadAndExtract("$baseUrl/cmdline/cmdline.zip", Environment.BIN_DIR.absolutePath, "Installiere Tools", 40)
+                    // 1. Download & Extraktion von Cmdline Tools
+                    downloadAndExtract("$baseUrl/cmdline/cmdline.zip", Environment.BIN_DIR.absolutePath, "Installiere Tools", 25)
 
-                    // 4. Download & Extraktion von Scripts
-                    downloadAndExtract("$baseUrl/scripts/scripts.zip", Environment.SCRIPTS.absolutePath, "Installiere Skripte", 60)
+                    // 2. Download & Extraktion von Scripts
+                    downloadAndExtract("$baseUrl/scripts/scripts.zip", Environment.SCRIPTS.absolutePath, "Installiere Skripte", 50)
 
-                    // 5. Download & Extraktion von Ubuntu Distro
+                    // 3. Download & Extraktion von Ubuntu Distro
                     val ubuntuUrl = if (is64) "$baseUrl/ubuntu/ubuntu-arm64.tar.gz" else "$baseUrl/ubuntu/ubuntu-armhf.tar.gz"
-                    downloadAndExtract(ubuntuUrl, Environment.ROOTFS.absolutePath, "Installiere Ubuntu", 80)
+                    downloadAndExtract(ubuntuUrl, Environment.ROOTFS.absolutePath, "Installiere Ubuntu", 75)
 
-                    // 6. Download & Extraktion von Bootstrap
+                    // 4. Download & Extraktion von Bootstrap
                     val bootstrapUrl = if (is64) "$baseUrl/bootstrap/bootstrap-aarch64.zip" else "$baseUrl/bootstrap/bootstrap-arm.zip"
                     downloadAndExtract(bootstrapUrl, Environment.HOME.absolutePath, "Installiere Bootstrap", 95)
                     
