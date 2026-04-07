@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.core.navigation"
+    namespace = "com.mcs.core.navigation"
     compileSdk = 34
 
     defaultConfig {

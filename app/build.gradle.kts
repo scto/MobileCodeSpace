@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.app"
+    namespace = "com.mcs.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.mobilecodespace.app"
+        applicationId = "com.mcs.app"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -36,6 +36,6 @@ dependencies {
     implementation(project(":feature:editor"))
     implementation(project(":feature:terminal"))
 
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    implementation(libs.google.hilt.android)
+    ksp(libs.google.hilt.compiler)
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.core.resources"
+    namespace = "com.mcs.core.resources"
     compileSdk = 34
 
     defaultConfig {

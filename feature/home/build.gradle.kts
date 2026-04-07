@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.home"
+    namespace = "com.mcs.feature.home"
     compileSdk = 34
 
     defaultConfig {

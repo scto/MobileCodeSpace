@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.git"
+    namespace = "com.mcs.feature.git"
     compileSdk = 34
 
     defaultConfig {

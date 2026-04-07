@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.editor"
+    namespace = "com.mcs.feature.editor"
     compileSdk = 34
 
     defaultConfig {
@@ -42,8 +42,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    implementation(libs.google.hilt.android)
+    ksp(libs.google.hilt.compiler)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
     // SoraEditor

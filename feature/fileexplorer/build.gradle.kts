@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.fileexplorer"
+    namespace = "com.mcs.feature.fileexplorer"
     compileSdk = 34
 
     defaultConfig {

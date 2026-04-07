@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.onboarding"
+    namespace = "com.mcs.feature.onboarding"
     compileSdk = 34
 
     defaultConfig {

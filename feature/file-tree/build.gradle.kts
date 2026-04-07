@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mobilecodespace.feature.filetree"
+    namespace = "com.mcs.feature.filetree"
     compileSdk = 34
 
     defaultConfig {
