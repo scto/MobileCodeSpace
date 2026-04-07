@@ -1,7 +1,6 @@
 package com.mcs.core.utils
 
 import org.apache.commons.compress.archivers.ArchiveEntry
-import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -12,83 +11,87 @@ import java.util.zip.ZipInputStream
 
 object ArchiveUtils {
     fun extract(archivePath: String, destDir: String): Boolean {
+        val file = File(archivePath)
         val ext = archivePath.substringAfterLast(".").lowercase()
         return when (ext) {
-            "zip" -> unzip(archivePath, destDir)
-            "gz" -> if (archivePath.contains(".tar.gz")) extractTarGz(archivePath, destDir) else ungzip(archivePath, destDir)
-            "tar" -> extractTar(archivePath, destDir)
-            "7z" -> extract7z(archivePath, destDir)
+            "zip" -> unzip(file, File(destDir))
+            "gz" -> if (archivePath.contains(".tar.gz")) extractTarGz(file, File(destDir)) else ungzip(file, File(destDir))
+            "tar" -> extractTar(file, File(destDir))
+            "7z" -> extract7z(file, File(destDir))
             else -> false
         }
     }
 
-    fun extract7z(archivePath: String, destDir: String): Boolean {
+    fun extract7z(archiveFile: File, destDir: File): Boolean {
         return try {
-            val sevenZFile = SevenZFile(File(archivePath))
-            val destFileDir = File(destDir).apply { if (!exists()) mkdirs() }
-            var entry = sevenZFile.nextEntry
-            while (entry != null) {
-                val curFile = File(destFileDir, entry.name)
-                if (entry.isDirectory) {
-                    curFile.mkdirs()
-                } else {
-                    curFile.parentFile?.mkdirs()
-                    FileOutputStream(curFile).use { out ->
-                        val content = ByteArray(entry.size.toInt())
-                        sevenZFile.read(content)
-                        out.write(content)
+            SevenZFile(archiveFile).use { sevenZFile ->
+                var entry = sevenZFile.nextEntry
+                while (entry != null) {
+                    val curFile = File(destDir, entry.name)
+                    if (entry.isDirectory) {
+                        curFile.mkdirs()
+                    } else {
+                        curFile.parentFile?.mkdirs()
+                        FileOutputStream(curFile).use { out ->
+                            val content = ByteArray(8192)
+                            var n: Int
+                            while (sevenZFile.read(content).also { n = it } != -1) {
+                                out.write(content, 0, n)
+                            }
+                        }
+                    }
+                    entry = sevenZFile.nextEntry
+                }
+            }
+            true
+        } catch (e: Exception) { e.printStackTrace(); false }
+    }
+
+    fun extractTarGz(archiveFile: File, destDir: File): Boolean {
+        return try {
+            FileInputStream(archiveFile).use { fis ->
+                GzipCompressorInputStream(fis).use { gzis ->
+                    TarArchiveInputStream(gzis).use { taris ->
+                        var entry: ArchiveEntry? = taris.nextEntry
+                        while (entry != null) {
+                            val destFile = File(destDir, entry.name)
+                            if (entry.isDirectory) {
+                                destFile.mkdirs()
+                            } else {
+                                destFile.parentFile?.mkdirs()
+                                Files.copy(taris, destFile.toPath())
+                            }
+                            entry = taris.nextEntry
+                        }
                     }
                 }
-                entry = sevenZFile.nextEntry
             }
-            sevenZFile.close()
             true
         } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    fun extractTarGz(archivePath: String, destDir: String): Boolean {
+    fun extractTar(archiveFile: File, destDir: File): Boolean {
         return try {
-            val fis = FileInputStream(archivePath)
-            val gzis = GzipCompressorInputStream(fis)
-            val taris = TarArchiveInputStream(gzis)
-            var entry: ArchiveEntry? = taris.nextEntry
-            while (entry != null) {
-                val destFile = File(destDir, entry.name)
-                if (entry.isDirectory) {
-                    destFile.mkdirs()
-                } else {
-                    destFile.parentFile?.mkdirs()
-                    Files.copy(taris, destFile.toPath())
+            TarArchiveInputStream(FileInputStream(archiveFile)).use { taris ->
+                var entry: ArchiveEntry? = taris.nextEntry
+                while (entry != null) {
+                    val destFile = File(destDir, entry.name)
+                    if (entry.isDirectory) {
+                        destFile.mkdirs()
+                    } else {
+                        destFile.parentFile?.mkdirs()
+                        Files.copy(taris, destFile.toPath())
+                    }
+                    entry = taris.nextEntry
                 }
-                entry = taris.nextEntry
             }
-            taris.close()
             true
         } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    fun extractTar(archivePath: String, destDir: String): Boolean {
+    fun unzip(zipFile: File, destDir: File): Boolean {
         return try {
-            val taris = TarArchiveInputStream(FileInputStream(archivePath))
-            var entry: ArchiveEntry? = taris.nextEntry
-            while (entry != null) {
-                val destFile = File(destDir, entry.name)
-                if (entry.isDirectory) {
-                    destFile.mkdirs()
-                } else {
-                    destFile.parentFile?.mkdirs()
-                    Files.copy(taris, destFile.toPath())
-                }
-                entry = taris.nextEntry
-            }
-            taris.close()
-            true
-        } catch (e: Exception) { e.printStackTrace(); false }
-    }
-
-    fun unzip(zipPath: String, destDir: String): Boolean {
-        return try {
-            ZipInputStream(BufferedInputStream(FileInputStream(zipPath))).use { zis ->
+            ZipInputStream(BufferedInputStream(FileInputStream(zipFile))).use { zis ->
                 var entry: ZipEntry? = zis.nextEntry
                 while (entry != null) {
                     val newFile = File(destDir, entry.name)
@@ -106,10 +109,10 @@ object ArchiveUtils {
         } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    fun ungzip(srcPath: String, destPath: String): Boolean {
+    fun ungzip(srcFile: File, destFile: File): Boolean {
         return try {
-            GzipCompressorInputStream(FileInputStream(srcPath)).use { gzis ->
-                FileOutputStream(destPath).use { fos -> gzis.copyTo(fos) }
+            GzipCompressorInputStream(FileInputStream(srcFile)).use { gzis ->
+                FileOutputStream(destFile).use { fos -> gzis.copyTo(fos) }
             }
             true
         } catch (e: Exception) { e.printStackTrace(); false }
