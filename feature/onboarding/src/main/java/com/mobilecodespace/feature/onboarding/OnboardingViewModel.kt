@@ -28,37 +28,37 @@ class OnboardingViewModel @Inject constructor(
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
     fun requestPermissions() {
-        // Berechtigungen wurden erteilt, weiter zum Download
         _uiState.value = OnboardingUiState.Downloading
     }
 
     fun startDownload() {
         viewModelScope.launch {
-            _uiState.value = OnboardingUiState.Installing
             withContext(Dispatchers.IO) {
                 try {
                     val is64 = Environment.archApp == "64"
                     val baseUrl = "https://github.com/scto/MobileCodeSpace-Packages/releases/download"
 
                     // 1. Installation von PRoot (lokal aus Assets)
+                    _uiState.value = OnboardingUiState.Progress("Installiere PRoot...", 10)
                     prootManager.installProotBinary()
                     
                     // 2. Setup des Rootfs (lokal)
+                    _uiState.value = OnboardingUiState.Progress("Initialisiere Dateisystem...", 20)
                     prootManager.setupRootfs()
                     
                     // 3. Download & Extraktion von Cmdline Tools
-                    downloadAndExtract("$baseUrl/cmdline/cmdline.zip", Environment.BIN_DIR.absolutePath)
+                    downloadAndExtract("$baseUrl/cmdline/cmdline.zip", Environment.BIN_DIR.absolutePath, "Installiere Tools", 40)
 
                     // 4. Download & Extraktion von Scripts
-                    downloadAndExtract("$baseUrl/scripts/scripts.zip", Environment.SCRIPTS.absolutePath)
+                    downloadAndExtract("$baseUrl/scripts/scripts.zip", Environment.SCRIPTS.absolutePath, "Installiere Skripte", 60)
 
                     // 5. Download & Extraktion von Ubuntu Distro
                     val ubuntuUrl = if (is64) "$baseUrl/ubuntu/ubuntu-arm64.tar.gz" else "$baseUrl/ubuntu/ubuntu-armhf.tar.gz"
-                    downloadAndExtract(ubuntuUrl, Environment.ROOTFS.absolutePath)
+                    downloadAndExtract(ubuntuUrl, Environment.ROOTFS.absolutePath, "Installiere Ubuntu", 80)
 
                     // 6. Download & Extraktion von Bootstrap
                     val bootstrapUrl = if (is64) "$baseUrl/bootstrap/bootstrap-aarch64.zip" else "$baseUrl/bootstrap/bootstrap-arm.zip"
-                    downloadAndExtract(bootstrapUrl, Environment.HOME.absolutePath)
+                    downloadAndExtract(bootstrapUrl, Environment.HOME.absolutePath, "Installiere Bootstrap", 95)
                     
                     completeSetup()
                 } catch (e: Exception) {
@@ -69,12 +69,15 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    private fun downloadAndExtract(url: String, targetDir: String) {
+    private suspend fun downloadAndExtract(url: String, targetDir: String, message: String, progress: Int) {
+        _uiState.value = OnboardingUiState.Progress(message, progress)
         val tempFile = File(application.cacheDir, "download_temp.zip")
         try {
-            URL(url).openStream().use { input ->
-                FileOutputStream(tempFile).use { output ->
-                    input.copyTo(output)
+            withContext(Dispatchers.IO) {
+                URL(url).openStream().use { input ->
+                    FileOutputStream(tempFile).use { output ->
+                        input.copyTo(output)
+                    }
                 }
             }
             
@@ -97,7 +100,7 @@ class OnboardingViewModel @Inject constructor(
 sealed class OnboardingUiState {
     object Permissions : OnboardingUiState()
     object Downloading : OnboardingUiState()
-    object Installing : OnboardingUiState()
+    data class Progress(val message: String, val percent: Int) : OnboardingUiState()
     object Completed : OnboardingUiState()
     data class Error(val message: String) : OnboardingUiState()
 }
