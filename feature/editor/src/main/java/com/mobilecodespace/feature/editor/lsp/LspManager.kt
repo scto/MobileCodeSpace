@@ -1,5 +1,7 @@
 package com.mobilecodespace.feature.editor.lsp
 
+import com.mobilecodespace.core.utils.Environment
+import com.mobilecodespace.core.utils.FileUtils
 import io.github.rosemoe.sora.lsp.LspClient
 import java.io.File
 
@@ -12,18 +14,26 @@ class LspManager {
     }
 
     fun start(language: String, file: File) {
-        // Hier würde die tatsächliche Initialisierung des LSP-Servers erfolgen
-        // lspClient = LspClient.create(...)
-        // lspClient?.didOpen(file, language)
+        // Suche nach dem LSP-Server Binary im LSP_DIR
+        // Annahme: Binaries sind benannt als lsp-<language>
+        val binary = File(Environment.LSP_DIR, "lsp-$language")
         
-        // Beispiel für einen Callback, wenn Diagnostics vom Server kommen:
-        // lspClient?.onDiagnostics { diagnostics ->
-        //     diagnosticListener?.invoke(diagnostics.map { it.message })
-        // }
+        if (binary.exists()) {
+            FileUtils.setFileExecutable(binary)
+            
+            // Initialisierung des LSP-Clients
+            lspClient = LspClient.create(binary.absolutePath)
+            
+            lspClient?.didOpen(file, language)
+            
+            lspClient?.onDiagnostics { diagnostics ->
+                diagnosticListener?.invoke(diagnostics.map { it.message })
+            }
+        }
     }
 
     fun format(file: File) {
-        // lspClient?.format(file)
+        lspClient?.format(file)
     }
 
     fun shutdown() {
