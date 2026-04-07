@@ -2,7 +2,6 @@ package com.mobilecodespace.core.exec
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import com.mobilecodespace.core.utils.Environment
 import com.mobilecodespace.core.utils.FileUtils
 import java.io.File
@@ -146,6 +145,7 @@ suspend fun ubuntuProcess(
     return ubuntuProcess(excludeMounts, root, workingDir, command.toMutableList())
 }
 
+/** Extension zum Lesen von stdout als String */
 suspend fun Process.readStdout(): String =
     withContext(Dispatchers.IO) {
         try {
@@ -159,6 +159,7 @@ suspend fun Process.readStdout(): String =
         }
     }
 
+/** Extension zum Lesen von stderr als String */
 suspend fun Process.readStderr(): String =
     withContext(Dispatchers.IO) {
         try {
@@ -172,6 +173,7 @@ suspend fun Process.readStderr(): String =
         }
     }
 
+/** Extension zum Schreiben in stdin */
 suspend fun Process.writeInput(input: String, flush: Boolean = true) =
     withContext(Dispatchers.IO) {
         OutputStreamWriter(outputStream).use { writer ->
@@ -180,10 +182,13 @@ suspend fun Process.writeInput(input: String, flush: Boolean = true) =
         }
     }
 
+/** Extension zum Warten auf Prozess-Ende */
 suspend fun Process.awaitExit(): Int = withContext(Dispatchers.IO) { waitFor() }
 
+/** Extension zum sicheren Beenden */
 fun Process.terminate() {
     if (isAlive) destroy()
 }
 
+/** Extension zum Prüfen, ob Prozess läuft */
 fun Process.isRunning(): Boolean = isAlive
