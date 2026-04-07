@@ -17,21 +17,5 @@ dependencyResolutionManagement {
 rootProject.name = "MobileCodeSpace"
 
 include(":app")
-
-// Core Modules
-include(":core:ui")
-include(":core:data")
-include(":core:di")
-include(":core:domain")
-include(":core:models")
-include(":core:navigation")
-include(":core:resources")
-
-// Feature Modules
-include(":feature:home")
-include(":feature:onboarding")
-include(":feature:editor")
-include(":feature:terminal")
-include(":feature:fileexplorer")
-include(":feature:git")
-include(":feature:settings")
+include(":core:ui", ":core:utils", ":core:domain", ":core:navigation", ":core:data")
+include(":feature:home", ":feature:onboarding", ":feature:editor", ":feature:terminal", ":feature:fileexplorer", ":feature:git", ":feature:settings")
