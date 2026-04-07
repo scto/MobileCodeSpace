@@ -7,8 +7,11 @@ import java.util.Locale
 
 object FileUtils {
     fun isAarch64(): Boolean = Build.SUPPORTED_ABIS.contains("arm64-v8a")
+    
     fun setFileExecutable(file: File): Boolean = file.setExecutable(true, false)
+    
     fun isFile(path: String): Boolean = File(path).isFile
+    
     fun getFileSize(filePath: String): String? {
         if (!isFile(filePath)) return null
         val file = File(filePath)
@@ -21,6 +24,7 @@ object FileUtils {
         }
         return String.format(Locale.US, "%.2f", size).replace(".00", "") + " " + units[unitIndex]
     }
+    
     fun createFile(path: String, isHidden: Boolean = false): Boolean {
         val file = File(path)
         if (file.exists()) return true

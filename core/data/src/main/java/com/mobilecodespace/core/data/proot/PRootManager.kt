@@ -1,6 +1,8 @@
 package com.mobilecodespace.core.data.proot
 
 import android.content.Context
+import com.mcs.core.utils.Environment
+import com.mcs.core.utils.FileUtils
 import java.io.File
 import java.io.FileOutputStream
 
@@ -10,12 +12,11 @@ import java.io.FileOutputStream
  */
 class PRootManager(private val context: Context) {
 
-    private val prootDir = File(context.filesDir, "proot")
-    private val prootBinary = File(prootDir, "proot-arm64")
-    private val rootfsDir = File(prootDir, "ubuntu-rootfs")
+    private val prootBinary = File(Environment.BIN_DIR, "proot")
+    private val rootfsDir = Environment.ROOTFS
 
     init {
-        if (!prootDir.exists()) prootDir.mkdirs()
+        Environment.ensureDirectories()
     }
 
     /**
@@ -23,23 +24,24 @@ class PRootManager(private val context: Context) {
      * falls sie noch nicht existiert, und setzt die Ausführungsrechte.
      */
     fun installProotBinary() {
+        val arch = if (FileUtils.isAarch64()) "arm64" else "arm"
+        val assetPath = "terminal/$arch/proot"
+        
         if (!prootBinary.exists()) {
-            context.assets.open("proot-arm64").use { input ->
+            context.assets.open(assetPath).use { input ->
                 FileOutputStream(prootBinary).use { output ->
                     input.copyTo(output)
                 }
             }
-            prootBinary.setExecutable(true)
+            FileUtils.setFileExecutable(prootBinary)
         }
     }
 
     /**
      * Bereitet das Rootfs vor.
-     * TODO: Implementierung für Download und Extraktion (z.B. via Tar) hinzufügen.
      */
     fun setupRootfs() {
         if (!rootfsDir.exists()) {
-            // Hier würde die Logik für Download und Extraktion (z.B. via Tar) folgen
             rootfsDir.mkdirs()
         }
     }
