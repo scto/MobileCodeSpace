@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.mobilecodespace.core.utils.Environment
 import io.github.rosemoe.sora.widget.CodeEditor
+import io.github.rosemoe.sora.langs.text.TextLanguage
 import java.io.File
 
 @Composable
@@ -27,11 +28,15 @@ fun SoraEditorView(
             )
             
             // Konfiguration: Laden von Themes/Grammatiken aus MOBILECODESPACE_HOME
+            // Wir setzen hier ein Standard-Theme, falls vorhanden
             val themeDir = File(Environment.MOBILECODESPACE_HOME, "themes")
             if (themeDir.exists()) {
-                // Hier würde die Logik zum Laden der Theme-Dateien stehen
-                // editor.setEditorLanguage(...)
+                // Hier könnte eine Logik zum Laden von JSON-Theme-Dateien implementiert werden
+                // editor.colorScheme = ...
             }
+            
+            // Standard-Sprache setzen
+            setEditorLanguage(TextLanguage())
         }
     }
 

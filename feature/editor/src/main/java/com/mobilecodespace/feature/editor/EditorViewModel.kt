@@ -46,7 +46,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
     fun openFile(file: File) {
         viewModelScope.launch {
             val content = withContext(Dispatchers.IO) {
-                file.readText()
+                if (file.exists()) file.readText() else ""
             }
             editor?.setText(content)
             
@@ -54,6 +54,8 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                 "java" -> "java"
                 "kt" -> "kotlin"
                 "cpp", "c" -> "cpp"
+                "xml" -> "xml"
+                "sh" -> "bash"
                 else -> "text"
             }
             
@@ -76,10 +78,14 @@ class EditorViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 file.writeText(content)
-                // Metadaten-Speicherung via JsonUtils
-                val metadata = mapOf("lastSaved" to System.currentTimeMillis())
+                
+                // Metadaten-Speicherung via JsonUtils im .mcs Ordner
+                val metadata = mapOf(
+                    "lastSaved" to System.currentTimeMillis(),
+                    "filePath" to path
+                )
                 val metaFile = File(Environment.MOBILECODESPACE_HOME, "${file.name}.json")
-                metaFile.writeText(JsonUtils.toJson(metadata))
+                JsonUtils.saveToFile(metadata, metaFile.absolutePath)
             }
             _uiState.value = _uiState.value.copy(isDirty = false)
         }
