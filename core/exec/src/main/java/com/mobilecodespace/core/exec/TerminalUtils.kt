@@ -1,8 +1,8 @@
 package com.mobilecodespace.core.exec
 
 import android.content.Context
-import android.content.Intent
 import com.mobilecodespace.core.utils.Environment
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -20,7 +20,9 @@ fun isTerminalInstalled(): Boolean {
                 it.absolutePath != Environment.TMP_DIR.absolutePath
         } ?: emptyList()
 
-    return Environment.BIN_DIR.child(".terminal_setup_ok_DO_NOT_REMOVE").exists() && rootfs.isNotEmpty()
+    // Prüft auf die Setup-Datei im Bin-Verzeichnis
+    val setupFile = File(Environment.BIN_DIR, ".terminal_setup_ok_DO_NOT_REMOVE")
+    return setupFile.exists() && rootfs.isNotEmpty()
 }
 
 /**
@@ -37,7 +39,6 @@ suspend fun isTerminalWorking(): Boolean =
  * Hinweis: Diese Funktion benötigt UI-Kontext und sollte in der UI-Schicht aufgerufen werden.
  */
 fun launchTerminal(context: Context, terminalCommand: TerminalCommand) {
-    // Die UI-Logik (showTerminalNotice) muss in der UI-Schicht implementiert werden.
+    // Die UI-Logik muss in der UI-Schicht implementiert werden.
     // Hier wird nur die Vorbereitung für den Start des Terminals abgebildet.
-    // context.startActivity(Intent(context, Terminal::class.java))
 }
