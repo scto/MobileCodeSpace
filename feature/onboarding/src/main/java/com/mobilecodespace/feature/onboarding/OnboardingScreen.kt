@@ -4,13 +4,13 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,25 +25,26 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // Permission launcher für Standard-Berechtigungen
+    // Initialer Check
+    LaunchedEffect(Unit) {
+        viewModel.checkPermissions(context)
+    }
+
+    // Permission launcher für Standard-Berechtigungen (Legacy)
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             if (isGranted) {
-                viewModel.requestPermissions()
+                viewModel.checkPermissions(context)
             }
         }
     )
 
-    // Launcher für MANAGE_EXTERNAL_STORAGE
+    // Launcher für MANAGE_EXTERNAL_STORAGE (Android 11+)
     val storagePermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { _ ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    viewModel.requestPermissions()
-                }
-            }
+            viewModel.checkPermissions(context)
         }
     )
 
@@ -53,8 +54,8 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
         verticalArrangement = Arrangement.Center
     ) {
         when (val state = uiState) {
-            is OnboardingUiState.Permissions -> {
-                Text("Berechtigungen erforderlich")
+            is OnboardingUiState.PermissionsRequired -> {
+                Text("Berechtigungen für Dateizugriff erforderlich")
                 Spacer(modifier = Modifier.height(16.dp))
                 MCSButton(text = "Berechtigungen erteilen", onClick = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -71,10 +72,10 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
                 Spacer(modifier = Modifier.height(16.dp))
                 MCSButton(text = "Start Download", onClick = { viewModel.startDownload() })
             }
-            is OnboardingUiState.Installing -> {
-                Text("Installiere Umgebung...")
+            is OnboardingUiState.Progress -> {
+                Text(state.message)
                 Spacer(modifier = Modifier.height(16.dp))
-                MCSProgressBar(progress = 0.5f)
+                MCSProgressBar(progress = state.percent / 100f)
             }
             is OnboardingUiState.Completed -> {
                 Text("Setup abgeschlossen!")
@@ -82,7 +83,7 @@ fun OnboardingScreen(viewModel: OnboardingViewModel) {
             is OnboardingUiState.Error -> {
                 Text("Fehler: ${state.message}")
                 Spacer(modifier = Modifier.height(16.dp))
-                MCSButton(text = "Erneut versuchen", onClick = { viewModel.startDownload() })
+                MCSButton(text = "Erneut versuchen", onClick = { viewModel.checkPermissions(context) })
             }
         }
     }

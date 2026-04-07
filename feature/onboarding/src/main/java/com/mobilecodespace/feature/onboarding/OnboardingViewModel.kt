@@ -1,11 +1,13 @@
 package com.mobilecodespace.feature.onboarding
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilecodespace.core.utils.ArchiveUtils
 import com.mobilecodespace.core.utils.Environment
 import com.mobilecodespace.core.utils.FileUtils
+import com.mobilecodespace.core.utils.PermissionsUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,18 +25,22 @@ class OnboardingViewModel @Inject constructor(
     private val application: Application
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.Permissions)
+    private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.PermissionsRequired)
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
     // Basis-URL für Downloads
     private val baseUrl = "https://github.com/scto/MobileCodeSpace-Packages/releases/download"
 
-    fun requestPermissions() {
-        _uiState.value = OnboardingUiState.Downloading
-        startDownload()
+    fun checkPermissions(context: Context) {
+        if (PermissionsUtils.hasStoragePermission(context)) {
+            _uiState.value = OnboardingUiState.Downloading
+            startDownload()
+        } else {
+            _uiState.value = OnboardingUiState.PermissionsRequired
+        }
     }
 
-    private fun startDownload() {
+    fun startDownload() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 try {
@@ -92,7 +98,7 @@ class OnboardingViewModel @Inject constructor(
 }
 
 sealed class OnboardingUiState {
-    object Permissions : OnboardingUiState()
+    object PermissionsRequired : OnboardingUiState()
     object Downloading : OnboardingUiState()
     data class Progress(val message: String, val percent: Int) : OnboardingUiState()
     object Completed : OnboardingUiState()
