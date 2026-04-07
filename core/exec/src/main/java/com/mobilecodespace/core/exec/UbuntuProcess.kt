@@ -1,10 +1,7 @@
 package com.mobilecodespace.core.exec
 
 import android.annotation.SuppressLint
-import android.os.Build
-import android.util.Log
 import com.mobilecodespace.core.utils.Environment
-import com.mobilecodespace.core.utils.FileUtils
 import java.io.File
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -12,6 +9,9 @@ import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Repräsentiert eine Bindung für das Dateisystem innerhalb der Sandbox.
+ */
 data class Binding(val outside: String, val inside: String? = null)
 
 private fun MutableList<String>.bind(outside: String, inside: String? = null) {
@@ -29,6 +29,9 @@ fun List<Binding>.attachTo(list: MutableList<String>, excludeMounts: List<String
     }
 }
 
+/**
+ * Gibt die Standard-Bindungen für die Ubuntu-Umgebung zurück.
+ */
 fun getDefaultBindings(): List<Binding> {
     fun MutableList<Binding>.bind(outside: String, inside: String? = null) {
         if (File(outside).exists()) {
@@ -62,6 +65,9 @@ fun getDefaultBindings(): List<Binding> {
     return list
 }
 
+/**
+ * Startet einen Prozess innerhalb der Ubuntu/PRoot-Umgebung.
+ */
 suspend fun ubuntuProcess(
     excludeMounts: List<String> = listOf(),
     root: File = Environment.ROOTFS,
