@@ -17,6 +17,7 @@ object Environment {
     }
 
     val HOME: File get() = File(appFilesDir, "MobileCodeSpace")
+    val MOBILECODESPACE_HOME: File get() = HOME
     val USR: File get() = File(HOME, "usr")
     val BIN_DIR: File get() = File(USR, "bin")
     val LIB_DIR: File get() = File(USR, "lib")
