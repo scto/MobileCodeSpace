@@ -35,6 +35,9 @@ object FileUtils {
 
     // --- DATEI-INFORMATIONEN & PFADE ---
 
+    /** Prüft, ob der Pfad eine existierende Datei ist. */
+    fun isFile(path: String): Boolean = File(path).isFile
+
     /** Gibt die Dateigröße formatiert zurück (z.B. "12.40 kb") */
     fun getFileSize(filePath: String): String? {
         if (!isFile(filePath)) return null
@@ -55,47 +58,4 @@ object FileUtils {
     /** Findet den absoluten Pfad einer Datei innerhalb eines Root-Verzeichnisses */
     fun getFilePath(rootDir: String, fileName: String, withExtension: Boolean): String? {
         val directory = File(rootDir)
-        if (!directory.exists() || !directory.isDirectory) return null
-        
-        val targetName = if (fileName.startsWith("/")) fileName.substring(1) else fileName
-        val files = directory.listFiles() ?: return null
-        
-        for (file in files) {
-            var path = file.absolutePath
-            if (!withExtension && file.isFile) {
-                path = path.substringBeforeLast('.')
-            }
-            
-            if (path.endsWith("/$targetName") && file.isFile) {
-                return file.absolutePath
-            }
-            
-            if (file.isDirectory) {
-                val found = getFilePath(file.absolutePath, fileName, withExtension)
-                if (found != null) return found
-            }
-        }
-        return null
-    }
-
-    fun getExtension(path: String): String = path.substringAfterLast('.', "")
-
-    fun setExtension(path: String, newExtension: String): String {
-        val base = path.substringBeforeLast('.')
-        return "$base.$newExtension"
-    }
-
-    fun getNameFromAbsolutePath(path: String): String = path.substringAfterLast('/')
-
-    fun getPrefixPath(path: String): String = path.substringBeforeLast('/')
-
-    fun getParentNameFromAbsolutePath(path: String): String = getNameFromAbsolutePath(getPrefixPath(path))
-
-    // --- DATEI-OPERATIONEN ---
-
-    /** Erstellt eine Datei. Falls isHidden true ist, wird ein Punkt vorangestellt. */
-    fun createFile(path: String, isHidden: Boolean = false): Boolean {
-        var finalPath = path
-        if (isHidden) {
-            val file = File(path)
-            if (!file.name.startsWith
+        if (!directory.exists
