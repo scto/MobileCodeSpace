@@ -1,7 +1,6 @@
-package com.mcs.core.utils
+package com.mobilecodespace.core.utils
 
 import org.apache.commons.compress.archivers.ArchiveEntry
-import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
@@ -10,109 +9,89 @@ import java.nio.file.Files
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-/**
- * Erweiterte Utility-Klasse für Archiv-Operationen.
- * Unterstützt ZIP, GZIP, TAR, TAR.GZ und 7Z (Lesen).
- * Nutzt Apache Commons Compress für maximale Kompatibilität.
- */
 object ArchiveUtils {
-
-    /**
-     * Universelle Entpack-Funktion basierend auf der Dateiendung.
-     */
     fun extract(archivePath: String, destDir: String): Boolean {
+        val file = File(archivePath)
         val ext = archivePath.substringAfterLast(".").lowercase()
         return when (ext) {
-            "zip" -> unzip(archivePath, destDir)
-            "gz" -> if (archivePath.contains(".tar.gz")) extractTarGz(archivePath, destDir) else ungzip(archivePath, destDir)
-            "tar" -> extractTar(archivePath, destDir)
-            "7z" -> extract7z(archivePath, destDir)
+            "zip" -> unzip(file, File(destDir))
+            "gz" -> if (archivePath.contains(".tar.gz")) extractTarGz(file, File(destDir)) else ungzip(file, File(destDir))
+            "tar" -> extractTar(file, File(destDir))
+            "7z" -> extract7z(file, File(destDir))
             else -> false
         }
     }
 
-    /** Entpackt ein .7z Archiv (Benötigt org.tukaani:xz im Klassenpfad) */
-    fun extract7z(archivePath: String, destDir: String): Boolean {
+    fun extract7z(archiveFile: File, destDir: File): Boolean {
         return try {
-            val sevenZFile = SevenZFile(File(archivePath))
-            val destFileDir = File(destDir).apply { if (!exists()) mkdirs() }
-            
-            var entry = sevenZFile.nextEntry
-            while (entry != null) {
-                val curFile = File(destFileDir, entry.name)
-                if (entry.isDirectory) {
-                    curFile.mkdirs()
-                } else {
-                    curFile.parentFile?.mkdirs()
-                    FileOutputStream(curFile).use { out ->
-                        val content = ByteArray(entry.size.toInt())
-                        sevenZFile.read(content)
-                        out.write(content)
+            SevenZFile(archiveFile).use { sevenZFile ->
+                var entry = sevenZFile.nextEntry
+                while (entry != null) {
+                    val curFile = File(destDir, entry.name)
+                    if (entry.isDirectory) {
+                        curFile.mkdirs()
+                    } else {
+                        curFile.parentFile?.mkdirs()
+                        FileOutputStream(curFile).use { out ->
+                            val content = ByteArray(8192)
+                            var n: Int
+                            while (sevenZFile.read(content).also { n = it } != -1) {
+                                out.write(content, 0, n)
+                            }
+                        }
+                    }
+                    entry = sevenZFile.nextEntry
+                }
+            }
+            true
+        } catch (e: Exception) { e.printStackTrace(); false }
+    }
+
+    fun extractTarGz(archiveFile: File, destDir: File): Boolean {
+        return try {
+            FileInputStream(archiveFile).use { fis ->
+                GzipCompressorInputStream(fis).use { gzis ->
+                    TarArchiveInputStream(gzis).use { taris ->
+                        var entry: ArchiveEntry? = taris.nextEntry
+                        while (entry != null) {
+                            val destFile = File(destDir, entry.name)
+                            if (entry.isDirectory) {
+                                destFile.mkdirs()
+                            } else {
+                                destFile.parentFile?.mkdirs()
+                                Files.copy(taris, destFile.toPath())
+                            }
+                            entry = taris.nextEntry
+                        }
                     }
                 }
-                entry = sevenZFile.nextEntry
             }
-            sevenZFile.close()
             true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+        } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    /** Entpackt ein .tar.gz Archiv */
-    fun extractTarGz(archivePath: String, destDir: String): Boolean {
+    fun extractTar(archiveFile: File, destDir: File): Boolean {
         return try {
-            val fis = FileInputStream(archivePath)
-            val gzis = GzipCompressorInputStream(fis)
-            val taris = TarArchiveInputStream(gzis)
-            
-            var entry: ArchiveEntry? = taris.nextEntry
-            while (entry != null) {
-                val destFile = File(destDir, entry.name)
-                if (entry.isDirectory) {
-                    destFile.mkdirs()
-                } else {
-                    destFile.parentFile?.mkdirs()
-                    Files.copy(taris, destFile.toPath())
+            TarArchiveInputStream(FileInputStream(archiveFile)).use { taris ->
+                var entry: ArchiveEntry? = taris.nextEntry
+                while (entry != null) {
+                    val destFile = File(destDir, entry.name)
+                    if (entry.isDirectory) {
+                        destFile.mkdirs()
+                    } else {
+                        destFile.parentFile?.mkdirs()
+                        Files.copy(taris, destFile.toPath())
+                    }
+                    entry = taris.nextEntry
                 }
-                entry = taris.nextEntry
             }
-            taris.close()
             true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+        } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    /** Entpackt ein einfaches .tar Archiv */
-    fun extractTar(archivePath: String, destDir: String): Boolean {
+    fun unzip(zipFile: File, destDir: File): Boolean {
         return try {
-            val taris = TarArchiveInputStream(FileInputStream(archivePath))
-            var entry: ArchiveEntry? = taris.nextEntry
-            while (entry != null) {
-                val destFile = File(destDir, entry.name)
-                if (entry.isDirectory) {
-                    destFile.mkdirs()
-                } else {
-                    destFile.parentFile?.mkdirs()
-                    Files.copy(taris, destFile.toPath())
-                }
-                entry = taris.nextEntry
-            }
-            taris.close()
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    /** Bestehende ZIP-Funktion (nativ oder via Commons) */
-    fun unzip(zipPath: String, destDir: String): Boolean {
-        return try {
-            ZipInputStream(BufferedInputStream(FileInputStream(zipPath))).use { zis ->
+            ZipInputStream(BufferedInputStream(FileInputStream(zipFile))).use { zis ->
                 var entry: ZipEntry? = zis.nextEntry
                 while (entry != null) {
                     val newFile = File(destDir, entry.name)
@@ -127,38 +106,15 @@ object ArchiveUtils {
                 }
             }
             true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
+        } catch (e: Exception) { e.printStackTrace(); false }
     }
 
-    /** GZIP für Einzeldateien */
-    fun ungzip(srcPath: String, destPath: String): Boolean {
+    fun ungzip(srcFile: File, destFile: File): Boolean {
         return try {
-            GzipCompressorInputStream(FileInputStream(srcPath)).use { gzis ->
-                FileOutputStream(destPath).use { fos -> gzis.copyTo(fos) }
+            GzipCompressorInputStream(FileInputStream(srcFile)).use { gzis ->
+                FileOutputStream(destFile).use { fos -> gzis.copyTo(fos) }
             }
             true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    /** Prüft die Integrität eines Archivs */
-    fun checkIntegrity(archivePath: String): Boolean {
-        return try {
-            val file = File(archivePath)
-            if (!file.exists()) return false
-            // Basaler Check: Kann die Factory einen Stream dafür öffnen?
-            BufferedInputStream(FileInputStream(file)).use { bis ->
-                ArchiveStreamFactory().createArchiveInputStream(bis)
-            }
-            true
-        } catch (e: Exception) {
-            // Manche Formate wie 7z benötigen spezielle Reader (SevenZFile)
-            archivePath.endsWith(".7z") || archivePath.endsWith(".rar")
-        }
+        } catch (e: Exception) { e.printStackTrace(); false }
     }
 }
