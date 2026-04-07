@@ -2,36 +2,40 @@ package com.mobilecodespace.feature.editor
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.core.utils.Environment
+import com.mobilecodespace.core.utils.JsonUtils
 import com.mobilecodespace.feature.editor.lsp.LspManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
+data class EditorUiState(
+    val content: String = "",
+    val filePath: String? = null,
+    val isDirty: Boolean = false,
+    val language: String = "text",
+    val diagnostics: List<String> = emptyList()
+)
+
 @HiltViewModel
 class EditorViewModel @Inject constructor() : ViewModel() {
 
-    private val _openFiles = MutableStateFlow<List<File>>(emptyList())
-    val openFiles: StateFlow<List<File>> = _openFiles
-
-    private val _isSaved = MutableStateFlow(true)
-    val isSaved: StateFlow<Boolean> = _isSaved
-
-    private val _diagnostics = MutableStateFlow<List<String>>(emptyList())
-    val diagnostics: StateFlow<List<String>> = _diagnostics
+    private val _uiState = MutableStateFlow(EditorUiState())
+    val uiState: StateFlow<EditorUiState> = _uiState.asStateFlow()
 
     private var editor: CodeEditor? = null
-    private var currentFile: File? = null
     private val lspManager = LspManager()
 
     init {
         lspManager.setDiagnosticListener { newDiagnostics ->
-            _diagnostics.value = newDiagnostics
+            _uiState.value = _uiState.value.copy(diagnostics = newDiagnostics)
         }
     }
 
@@ -45,9 +49,7 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                 file.readText()
             }
             editor?.setText(content)
-            currentFile = file
             
-            // Sprach-Erkennung basierend auf Dateiendung
             val language = when (file.extension) {
                 "java" -> "java"
                 "kt" -> "kotlin"
@@ -55,57 +57,38 @@ class EditorViewModel @Inject constructor() : ViewModel() {
                 else -> "text"
             }
             
-            // LSP-Initialisierung für die erkannte Sprache
             lspManager.start(language, file)
             
-            if (!_openFiles.value.contains(file)) {
-                _openFiles.value = _openFiles.value + file
-            }
-            _isSaved.value = true
+            _uiState.value = EditorUiState(
+                content = content,
+                filePath = file.absolutePath,
+                isDirty = false,
+                language = language
+            )
         }
     }
 
     fun saveFile() {
-        val file = currentFile ?: return
+        val path = _uiState.value.filePath ?: return
+        val file = File(path)
         val content = editor?.text.toString()
+        
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 file.writeText(content)
+                // Metadaten-Speicherung via JsonUtils
+                val metadata = mapOf("lastSaved" to System.currentTimeMillis())
+                val metaFile = File(Environment.MOBILECODESPACE_HOME, "${file.name}.json")
+                metaFile.writeText(JsonUtils.toJson(metadata))
             }
-            _isSaved.value = true
+            _uiState.value = _uiState.value.copy(isDirty = false)
         }
     }
 
-    fun saveAll() {
-        saveFile()
-    }
-
-    fun undo() {
-        editor?.undo()
-    }
-
-    fun redo() {
-        editor?.redo()
-    }
-
-    fun selectAll() {
-        editor?.selectAll()
-    }
-
-    fun cut() {
-        editor?.cut()
-    }
-
-    fun copy() {
-        editor?.copy()
-    }
-
-    fun paste() {
-        editor?.paste()
-    }
-
     fun formatCode() {
-        currentFile?.let { lspManager.format(it) }
+        _uiState.value.filePath?.let { path ->
+            lspManager.format(File(path))
+        }
     }
     
     override fun onCleared() {
