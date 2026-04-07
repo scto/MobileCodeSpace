@@ -1,4 +1,4 @@
-package com.mobilecodespace.app
+package com.mcs.app
 
 object MCSConstants {
     const val ROOT_PATH = "MCSProjects"
