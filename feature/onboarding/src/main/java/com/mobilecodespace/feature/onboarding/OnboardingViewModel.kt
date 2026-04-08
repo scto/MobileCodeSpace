@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mobilecodespace.app.MCSConstants
 import com.mobilecodespace.core.utils.ArchiveUtils
 import com.mobilecodespace.core.utils.Environment
 import com.mobilecodespace.core.utils.FileUtils
@@ -28,9 +29,6 @@ class OnboardingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<OnboardingUiState>(OnboardingUiState.PermissionsRequired)
     val uiState: StateFlow<OnboardingUiState> = _uiState
 
-    // Basis-URL für Downloads
-    private val baseUrl = "https://github.com/scto/MobileCodeSpace-Packages/releases/download"
-
     fun checkPermissions(context: Context) {
         if (PermissionsUtils.hasStoragePermission(context)) {
             _uiState.value = OnboardingUiState.Downloading
@@ -47,17 +45,17 @@ class OnboardingViewModel @Inject constructor(
                     val is64 = FileUtils.isAarch64()
 
                     // 1. Download & Extraktion von Cmdline Tools
-                    downloadAndExtract("$baseUrl/cmdline/cmdline.zip", Environment.BIN_DIR.absolutePath, "Installiere Tools", 25)
+                    downloadAndExtract(MCSConstants.CMDLINE_TOOLS_URL, Environment.BIN_DIR.absolutePath, "Installiere Tools", 25)
 
                     // 2. Download & Extraktion von Scripts
-                    downloadAndExtract("$baseUrl/scripts/scripts.zip", Environment.SCRIPTS.absolutePath, "Installiere Skripte", 50)
+                    downloadAndExtract(MCSConstants.SCRIPTS_URL, Environment.SCRIPTS.absolutePath, "Installiere Skripte", 50)
 
                     // 3. Download & Extraktion von Ubuntu Distro
-                    val ubuntuUrl = if (is64) "$baseUrl/ubuntu/ubuntu-arm64.tar.gz" else "$baseUrl/ubuntu/ubuntu-armhf.tar.gz"
+                    val ubuntuUrl = if (is64) MCSConstants.UBUNTU_ARM64_URL else MCSConstants.UBUNTU_ARMHF_URL
                     downloadAndExtract(ubuntuUrl, Environment.ROOTFS.absolutePath, "Installiere Ubuntu", 75)
 
                     // 4. Download & Extraktion von Bootstrap
-                    val bootstrapUrl = if (is64) "$baseUrl/bootstrap/bootstrap-aarch64.zip" else "$baseUrl/bootstrap/bootstrap-arm.zip"
+                    val bootstrapUrl = if (is64) MCSConstants.BOOTSTRAP_AARCH64_URL else MCSConstants.BOOTSTRAP_ARM_URL
                     downloadAndExtract(bootstrapUrl, Environment.HOME.absolutePath, "Installiere Bootstrap", 95)
                     
                     completeSetup()
