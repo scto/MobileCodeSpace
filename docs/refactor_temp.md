@@ -1,34 +1,43 @@
-Aider Prompt: Refactoring des temp-Ordners & Konstanten-Migration
-Du bist ein Senior Android Software Architekt und arbeitest am Projekt "MobileCodeSpace" (MCS). Deine aktuelle Aufgabe besteht darin, Legacy-Code aus einem temp-Ordner in die saubere Multi-Modul-Architektur zu migrieren und eine projektweite Konstanten-Anpassung vorzunehmen.
-AUFGABE 1: Globale Konstanten-Migration (MCSConstants)
-Die alte Konstanten-Datei com.mcs.app.MCSConstants wurde gelöscht. Es existiert nun eine neue, erweiterte Version unter com.mobilecodespace.app.MCSConstants. Diese neue Datei enthält auch die korrekten URLs für Ubuntu, PRoot, Rootfs und die Libraries (Libs).
-Aktionen:
-1. Durchsuche das gesamte Projekt nach dem Import com.mcs.app.MCSConstants und ersetze ihn durch com.mobilecodespace.app.MCSConstants.
-2. Passe alle Klassen, die bisher hartkodierte Download-URLs verwendet haben (wie z.B. der PRootManager oder OnboardingViewModel), so an, dass sie nun die URLs aus der neuen MCSConstants Datei abrufen.
-3. Stelle sicher, dass keine Build-Fehler durch fehlende Konstanten entstehen.
-AUFGABE 2: Neues Submodul :core:exec erstellen & befüllen
-Der Basis-Ordner temp enthält Logik zur Ausführung von Shell-Befehlen, PRoot-Umgebungen und Prozess-Verwaltung. Diese Logik muss in ein neues Modul.
-Aktionen:
-1. Erstelle das Submodul :core:exec (inklusive build.gradle.kts mit dem Namespace com.mobilecodespace.core.exec).
-2. Trage :core:exec in die settings.gradle.kts ein.
-3. Analysiere die Dateien im Hauptverzeichnis des temp-Ordners (alles außer temp/terminal).
-4. Refaktoriere diese Dateien in das :core:exec Modul:
-   * Behalte die vollständige Funktionalität bei.
-   * Passe den Code an moderne Kotlin-Standards (Coroutines, Flow) und die MobileCodeSpace-Architektur an.
-   * Nutze für alle Pfad-Auflösungen zwingend die Environment.kt aus :core:utils.
-   * Nutze für alle Dateioperationen die FileUtils.kt aus :core:utils.
-5. Stelle sicher, dass :core:exec als Abhängigkeit in Modulen verfügbar gemacht wird, die Prozesse ausführen müssen (z.B. :core:data oder :feature:terminal).
-AUFGABE 3: Refactoring in :feature:terminal
-Der Ordner temp/terminal/ enthält spezifische UI- oder Session-Logik für das Terminal.
-Aktionen:
-1. Analysiere die Dateien im Ordner temp/terminal/.
-2. Migriere diese Dateien in das bestehende Modul :feature:terminal.
-3. Passe auch hier die Architektur an:
-   * Verbinde die Logik sauber mit der Jetpack Compose UI (falls zutreffend) oder der termux-view.
-   * Verknüpfe die Terminal-Session-Logik mit dem neuen :core:exec Modul, falls Prozesse gestartet werden müssen.
-   * Entferne veraltete Importe und nutze Hilt für Dependency Injection.
-REGELN FÜR DAS REFACTORING
-* Kein Funktionsverlust: Die Logik aus dem temp-Ordner darf modernisiert werden, aber keine Kernfunktionen (wie Argument-Parsing, Env-Setup für PRoot) dürfen verloren gehen.
-* Sprache: Alle neuen Kommentare und UI-Texte MÜSSEN auf DEUTSCH verfasst werden.
-* Kotlin Only: Konvertiere eventuell verbliebenen Java-Code während des Refactorings in idiomatisches Kotlin.
-* Aufwand: Gehe systematisch vor. Repariere nach der Verschiebung alle Abhängigkeiten, bis ./gradlew assembleDebug fehlerfrei durchläuft.
+﻿Aider Refactoring-Schritte für MobileCodeSpace
+Führe diese Prompts nacheinander aus. Gib aider Zeit, jeden Schritt abzuschließen und zu committen, bevor du den nächsten einfügst.
+Schritt 1: Die Konstanten-Migration (Suchen & Ersetzen)
+Füge vorher idealerweise die Dateien zum Chat hinzu, von denen du weißt, dass sie Konstanten nutzen (z.B. /add app/src/.../PRootManager.kt OnboardingViewModel.kt).
+Prompt 1:
+Du bist ein Senior Android Architekt. Wir führen eine Konstanten-Migration im Projekt "MobileCodeSpace" durch.
+1. Durchsuche den aktuellen Kontext und ersetze jeden Import von com.mcs.app.MCSConstants durch com.mobilecodespace.app.MCSConstants.
+2. Finde alle Stellen (wie z.B. im PRootManager oder OnboardingViewModel), an denen Download-URLs für Ubuntu, PRoot, Rootfs oder Libs hartkodiert sind. Ersetze diese hartkodierten Strings durch die passenden Konstanten aus der neuen MCSConstants Datei.
+3. Achte penibel darauf, dass die Syntax korrekt bleibt, um Build-Fehler zu vermeiden.
+Schritt 2: Das neue Modul anlegen (Infrastruktur)
+Hier geht es nur darum, Gradle und die Ordnerstruktur aufzusetzen, noch keinen Code verschieben! Lade dazu die settings.gradle.kts in den Chat.
+Prompt 2:
+Wir bauen die Multi-Modul-Architektur aus.
+1. Erstelle ein neues Submodul namens :core:exec.
+2. Lege dafür die nötige Ordnerstruktur an und erstelle eine build.gradle.kts Datei. Der Namespace in der Gradle-Datei muss com.mobilecodespace.core.exec lauten.
+3. Trage das neue Modul :core:exec in die settings.gradle.kts ein.
+Schritt 3: Dateien verschieben & zu Kotlin konvertieren
+Lade nun die Dateien aus dem temp Verzeichnis (außer temp/terminal) in den Chat.
+Prompt 3:
+Wir migrieren nun Legacy-Code.
+1. Analysiere alle Dateien, die gerade aus dem Basis-Ordner temp im Chat sind (ignoriere alles unterhalb von temp/terminal).
+2. Verschiebe diese Dateien in das neu erstellte Modul :core:exec.
+3. Wichtig: Konvertiere jeglichen Java-Code während des Verschiebens in idiomatisches Kotlin.
+4. Übersetze alle Code-Kommentare in diesen Dateien auf DEUTSCH.
+5. Behalte die Logik zur Ausführung von Shell-Befehlen und Prozess-Verwaltung exakt bei (kein Funktionsverlust).
+Schritt 4: Architektur im neuen Modul anpassen (Refactoring)
+Behalte die Dateien aus Schritt 3 im Chat. Füge Environment.kt und FileUtils.kt aus :core:utils zum Chat hinzu.
+Prompt 4:
+Der Code in :core:exec muss nun an unsere moderne Architektur angepasst werden.
+1. Refaktoriere den Code, sodass er moderne Kotlin-Standards nutzt (Coroutines und Flow anstelle von alten Threading- oder Callback-Modellen).
+2. Zwingende Regel: Nutze für alle Pfad-Auflösungen ab sofort ausschließlich die Environment.kt aus dem Modul :core:utils. Entferne alte Pfad-Logik.
+3. Zwingende Regel: Nutze für alle Dateioperationen ab sofort ausschließlich die FileUtils.kt aus :core:utils.
+4. Prüfe, ob :core:exec in Modulen wie :core:data als Abhängigkeit in deren build.gradle.kts eingetragen werden muss, und hole das ggf. nach.
+Schritt 5: Terminal-Logik migrieren
+Entferne die alten Dateien aus dem Chat (/drop). Füge nun die Dateien aus temp/terminal/ sowie die Ziel-Dateien aus :feature:terminal hinzu.
+Prompt 5:
+Letzter Schritt: Refactoring der Terminal-Session-Logik.
+1. Migriere die Dateien aus dem Ordner temp/terminal/ in das bestehende Modul :feature:terminal.
+2. Konvertiere eventuellen Java-Code in Kotlin und schreibe Kommentare/UI-Texte auf Deutsch.
+3. Verbinde die Logik sauber mit der Jetpack Compose UI bzw. der termux-view.
+4. Verknüpfe die Terminal-Session-Logik mit dem neuen :core:exec Modul, um Prozesse zu starten.
+5. Entferne veraltete Importe und richte Hilt für die Dependency Injection in diesen Klassen ein.
+6. Stelle sicher, dass der Code kompilierbar ist (keine ungelösten Referenzen).
