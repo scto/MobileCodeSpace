@@ -108,4 +108,18 @@ object FileUtils {
             false
         }
     }
+    
+    fun copyRecursively(source: File, target: File): Boolean {
+        return try {
+            source.copyRecursively(target, overwrite = true)
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    fun deleteRecursively(file: File): Boolean {
+        return file.deleteRecursively()
+    }
 }
