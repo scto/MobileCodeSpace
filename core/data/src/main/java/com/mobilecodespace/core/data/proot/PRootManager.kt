@@ -1,8 +1,8 @@
 package com.mobilecodespace.core.data.proot
 
 import android.content.Context
-import com.mcs.core.utils.Environment
-import com.mcs.core.utils.FileUtils
+import com.mobilecodespace.core.utils.Environment
+import com.mobilecodespace.core.utils.FileUtils
 import java.io.File
 import java.io.FileOutputStream
 
