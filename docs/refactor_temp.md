@@ -1,7 +1,10 @@
 ﻿Aider Refactoring-Schritte für MobileCodeSpace
 Führe diese Prompts nacheinander aus. Gib aider Zeit, jeden Schritt abzuschließen und zu committen, bevor du den nächsten einfügst.
+
 Schritt 1: Die Konstanten-Migration (Suchen & Ersetzen)
-Füge vorher idealerweise die Dateien zum Chat hinzu, von denen du weißt, dass sie Konstanten nutzen (z.B. /add app/src/.../PRootManager.kt OnboardingViewModel.kt).
+Füge vorher idealerweise die Dateien zum Chat hinzu, von denen du weißt, dass sie Konstanten nutzen 
+(z.B. /add core/data/src/main/java/com/mobilecodespace/core/data/proot/PRootManager.kt 
+/add feature/onboarding/src/main/java/com/mobilecodespace/feature/ onboarding/OnboardingViewModel.kt).
 Prompt 1:
 Du bist ein Senior Android Architekt. Wir führen eine Konstanten-Migration im Projekt "MobileCodeSpace" durch.
 1. Durchsuche den aktuellen Kontext und ersetze jeden Import von com.mcs.app.MCSConstants durch com.mobilecodespace.app.MCSConstants.
