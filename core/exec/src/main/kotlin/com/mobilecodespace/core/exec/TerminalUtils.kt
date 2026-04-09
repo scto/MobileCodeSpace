@@ -12,6 +12,7 @@ import com.rk.utils.showTerminalNotice
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/** Prüft, ob das Terminal installiert ist. */
 fun isTerminalInstalled(): Boolean {
     val rootfs =
         sandboxDir().listFiles()?.filter {
@@ -22,12 +23,14 @@ fun isTerminalInstalled(): Boolean {
     return localDir().child(".terminal_setup_ok_DO_NOT_REMOVE").exists() && rootfs.isNotEmpty()
 }
 
+/** Prüft, ob das Terminal funktioniert. */
 suspend fun isTerminalWorking(): Boolean =
     withContext(Dispatchers.IO) {
         val process = ubuntuProcess(command = arrayOf("true"))
         return@withContext process.waitFor() == 0
     }
 
+/** Startet das Terminal. */
 fun launchTerminal(context: Context, terminalCommand: TerminalCommand) {
     showTerminalNotice(activity = MainActivity.instance!!) {
         pendingCommand = terminalCommand

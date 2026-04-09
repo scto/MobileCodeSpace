@@ -22,6 +22,7 @@ import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/** Bindung für Dateisystem-Mounts. */
 data class Binding(val outside: String, val inside: String? = null)
 
 private fun MutableList<String>.bind(outside: String, inside: String? = null) {
@@ -31,6 +32,7 @@ private fun MutableList<String>.bind(outside: String, inside: String? = null) {
     }
 }
 
+/** Hängt Bindungen an die Liste an. */
 fun List<Binding>.attachTo(list: MutableList<String>, excludeMounts: List<String> = listOf<String>()) {
     forEach {
         if (!excludeMounts.contains(it.outside)) {
@@ -39,6 +41,7 @@ fun List<Binding>.attachTo(list: MutableList<String>, excludeMounts: List<String
     }
 }
 
+/** Gibt die Standard-Bindungen zurück. */
 fun getDefaultBindings(): List<Binding> {
     fun MutableList<Binding>.bind(outside: String, inside: String? = null) {
         if (File(outside).exists()) {
@@ -74,6 +77,7 @@ fun getDefaultBindings(): List<Binding> {
     return list
 }
 
+/** Startet einen Ubuntu-Prozess. */
 suspend fun ubuntuProcess(
     excludeMounts: List<String> = listOf(),
     root: File = sandboxDir(),
@@ -198,7 +202,7 @@ suspend fun ubuntuProcess(
     return ubuntuProcess(excludeMounts, root, workingDir, command.toMutableList())
 }
 
-/** Erweiterung, um den gesamten stdout als einen String zu lesen */
+/** Erweiterung, um den gesamten stdout als einen String zu lesen. */
 suspend fun Process.readStdout(): String =
     withContext(Dispatchers.IO) {
         try {
@@ -212,6 +216,7 @@ suspend fun Process.readStdout(): String =
         }
     }
 
+/** Erweiterung, um den gesamten stderr als einen String zu lesen. */
 suspend fun Process.readStderr(): String =
     withContext(Dispatchers.IO) {
         try {
@@ -225,7 +230,7 @@ suspend fun Process.readStderr(): String =
         }
     }
 
-/** Erweiterung, um in den Prozess-stdin zu schreiben */
+/** Erweiterung, um in den Prozess-stdin zu schreiben. */
 suspend fun Process.writeInput(input: String, flush: Boolean = true) =
     withContext(Dispatchers.IO) {
         OutputStreamWriter(outputStream).use { writer ->
@@ -234,13 +239,13 @@ suspend fun Process.writeInput(input: String, flush: Boolean = true) =
         }
     }
 
-/** Erweiterung, um auf das Beenden des Prozesses zu warten und den Exit-Code zurückzugeben */
+/** Erweiterung, um auf das Beenden des Prozesses zu warten und den Exit-Code zurückzugeben. */
 suspend fun Process.awaitExit(): Int = withContext(Dispatchers.IO) { waitFor() }
 
-/** Erweiterung, um den Prozess sicher zu beenden */
+/** Erweiterung, um den Prozess sicher zu beenden. */
 fun Process.terminate() {
     if (isAlive) destroy()
 }
 
-/** Erweiterung, um zu prüfen, ob der Prozess läuft */
+/** Erweiterung, um zu prüfen, ob der Prozess läuft. */
 fun Process.isRunning(): Boolean = isAlive

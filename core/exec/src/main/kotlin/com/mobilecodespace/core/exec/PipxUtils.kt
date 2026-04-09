@@ -3,6 +3,7 @@ package com.mobilecodespace.core.exec
 import org.json.JSONObject
 
 object PipxUtils {
+    /** Ruft die installierte Version ab. */
     suspend fun getInstalledVersion(venvName: String): String? {
         val result =
             ShellUtils.runUbuntu(
@@ -18,6 +19,7 @@ object PipxUtils {
             .getOrNull()
     }
 
+    /** Ruft die neueste Version ab. */
     suspend fun getLatestVersion(venvName: String): String? {
         val result =
             ShellUtils.runUbuntu(
@@ -33,6 +35,7 @@ object PipxUtils {
             .getOrNull()
     }
 
+    /** Prüft, ob ein Update verfügbar ist. */
     suspend fun hasUpdate(venvName: String): Boolean {
         val result =
             ShellUtils.runUbuntu(

@@ -5,8 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object ShellUtils {
+    /** Ergebnis eines Shell-Befehls. */
     data class Result(val exitCode: Int, val output: String, val error: String, val timedOut: Boolean)
 
+    /** Führt einen Befehl aus. */
     suspend fun run(vararg command: String, timeoutSeconds: Long? = null): Result =
         withContext(Dispatchers.IO) {
             val process = ProcessBuilder(*command).start()
@@ -47,6 +49,7 @@ object ShellUtils {
             )
         }
 
+    /** Führt einen Befehl in der Ubuntu-Umgebung aus. */
     suspend fun runUbuntu(workingDir: String? = null, vararg command: String, timeoutSeconds: Long? = null): Result =
         withContext(Dispatchers.IO) {
             val process = ubuntuProcess(workingDir = workingDir, command = command.toList())
